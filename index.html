@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio Digital & Pedidos WhatsApp</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- CABEÇALHO -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 px-4 py-3 shadow-md flex justify-between items-center">
+        <div class="font-bold text-lg text-white flex items-center gap-2">
+            <i class="fa-solid fa-store text-red-500"></i> Bella Pizza & Burger
+        </div>
+        <div class="text-sm text-slate-300"><i class="fa-regular fa-clock text-amber-500"></i> 18:00 - 23:30</div>
+    </header>
+
+    <!-- CAPA E LOGO -->
+    <main class="max-w-5xl mx-auto px-4 py-6">
+        <div class="relative rounded-2xl overflow-hidden mb-6 h-48 bg-slate-800 shadow-lg">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1200" alt="Capa" class="w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent flex flex-col justify-end p-6">
+                <div class="flex items-center gap-4">
+                    <img src="https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&q=80&w=200" alt="Logo" class="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">Bella Pizza & Burger</h1>
+                        <p class="text-slate-300 text-sm">A melhor da região</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORIAS -->
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide" id="categories-container">
+            <!-- Categorias renderizadas via JS -->
+        </div>
+
+        <!-- PRODUTOS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="products-container">
+            <!-- Produtos renderizados via JS -->
+        </div>
+    </main>
+
+    <!-- BOTÃO CARRINHO FLUTUANTE -->
+    <div id="cart-floater" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-900/95 border-t border-slate-800 z-40 hidden">
+        <button onclick="openCart()" class="w-full max-w-5xl mx-auto bg-red-600 hover:bg-red-700 text-white p-4 rounded-xl flex justify-between font-bold shadow-lg transition">
+            <span id="cart-count">0 Itens</span>
+            <span>Ver Carrinho • R$ <span id="cart-total-float">0.00</span></span>
+        </button>
+    </div>
+
+    <!-- MODAL DO PRODUTO -->
+    <div id="product-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
+            <img id="modal-img" src="" class="w-full h-48 object-cover">
+            <div class="p-5">
+                <h2 id="modal-title" class="text-xl font-bold mb-1 text-white"></h2>
+                <p id="modal-desc" class="text-sm text-slate-400 mb-4"></p>
+                <textarea id="modal-notes" placeholder="Observações (ex: sem cebola)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white mb-4" rows="2"></textarea>
+                
+                <div class="flex justify-between items-center border-t border-slate-700 pt-4">
+                    <div class="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-700">
+                        <button onclick="changeQty(-1)" class="text-slate-400 px-2"><i class="fa-solid fa-minus"></i></button>
+                        <span id="modal-qty" class="font-bold text-white">1</span>
+                        <button onclick="changeQty(1)" class="text-slate-400 px-2"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <button onclick="addToCart()" class="bg-red-600 px-6 py-3 rounded-xl font-bold text-white">Adicionar</button>
+                </div>
+                <button onclick="closeProductModal()" class="w-full mt-4 text-slate-400 py-2 hover:text-white">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DO CARRINHO E CHECKOUT -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-bag-shopping text-red-500"></i> Seu Pedido</h2>
+                <button onclick="closeCart()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="p-4 overflow-y-auto flex-1 space-y-4">
+                <div id="cart-items" class="space-y-3">
+                    <!-- Itens do carrinho via JS -->
+                </div>
+
+                <form id="checkout-form" class="space-y-3 pt-4 border-t border-slate-700">
+                    <h3 class="text-sm font-bold text-slate-300 uppercase">Dados da Entrega</h3>
+                    <input type="text" id="c-name" required placeholder="Nome Completo" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                    <input type="tel" id="c-phone" required placeholder="WhatsApp (DDD+Número)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                    
+                    <div class="flex gap-2">
+                        <button type="button" id="btn-delivery" onclick="setDelivery('delivery')" class="flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500">Entrega</button>
+                        <button type="button" id="btn-pickup" onclick="setDelivery('pickup')" class="flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700">Retirada</button>
+                    </div>
+
+                    <div id="address-field">
+                        <input type="text" id="c-address" placeholder="Endereço Completo e Bairro" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                    </div>
+
+                    <select id="c-payment" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                        <option value="Pix">Pagamento via Pix</option>
+                        <option value="Cartão">Cartão (na entrega)</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                    </select>
+                </form>
+            </div>
+            
+            <div class="p-4 border-t border-slate-700 bg-slate-900 rounded-b-2xl">
+                <div class="flex justify-between text-slate-400 text-sm mb-1">
+                    <span>Subtotal</span> <span id="checkout-subtotal">R$ 0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-400 text-sm mb-3">
+                    <span>Taxa de Entrega</span> <span id="checkout-fee">R$ 5.00</span>
+                </div>
+                <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Enviar Pedido (R$ <span id="checkout-total">0.00</span>)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT DO SISTEMA -->
+    <script>
+        // Configurações da Loja
+        const STORE_PHONE = "5511999999999"; // Coloque seu número aqui
+        const DELIVERY_FEE = 5.00;
+
+        // Banco de Dados de Produtos
+        const products = [
+            { id: 1, name: 'Pizza Calabresa', category: 'Pizzas', price: 48.90, desc: 'Molho, muçarela, calabresa e cebola.', img: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400' },
+            { id: 2, name: 'Pizza Marguerita', category: 'Pizzas', price: 45.90, desc: 'Muçarela, tomate e manjericão fresco.', img: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&q=80&w=400' },
+            { id: 3, name: 'Smash Burger Duplo', category: 'Lanches', price: 32.90, desc: 'Dois blends, cheddar, pão brioche.', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400' },
+            { id: 4, name: 'Coca-Cola 2L', category: 'Bebidas', price: 14.00, desc: 'Bem gelada.', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
+            { id: 5, name: 'Pudim Caseiro', category: 'Sobremesas', price: 12.00, desc: 'Pudim de leite condensado.', img: 'https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?auto=format&fit=crop&q=80&w=400' }
+        ];
+
+        const categories = ['Todos', 'Pizzas', 'Lanches', 'Bebidas', 'Sobremesas'];
+        let activeCategory = 'Todos';
+        let cart = [];
+        let deliveryMode = 'delivery';
+        let activeProduct = null;
+        let activeQty = 1;
+
+        // Renderizar Categorias
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition ${activeCategory === cat ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-300'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        // Renderizar Produtos
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            const filtered = activeCategory === 'Todos' ? products : products.filter(p => p.category === activeCategory);
+            
+            container.innerHTML = filtered.map(p => `
+                <div onclick="openProduct(${p.id})" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 flex flex-col cursor-pointer hover:border-red-500 transition">
+                    <img src="${p.img}" class="w-full h-40 object-cover">
+                    <div class="p-4 flex flex-col flex-1 justify-between">
+                        <div>
+                            <h3 class="font-bold text-white mb-1">${p.name}</h3>
+                            <p class="text-sm text-slate-400 line-clamp-2">${p.desc}</p>
+                        </div>
+                        <div class="mt-3 flex justify-between items-center">
+                            <span class="font-bold text-green-400">R$ ${p.price.toFixed(2)}</span>
+                            <button class="bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filtro de Categoria
+        function filterCategory(cat) {
+            activeCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        // Modal de Produto
+        function openProduct(id) {
+            activeProduct = products.find(p => p.id === id);
+            activeQty = 1;
+            document.getElementById('modal-img').src = activeProduct.img;
+            document.getElementById('modal-title').innerText = activeProduct.name;
+            document.getElementById('modal-desc').innerText = activeProduct.desc;
+            document.getElementById('modal-qty').innerText = activeQty;
+            document.getElementById('modal-notes').value = '';
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        function changeQty(delta) {
+            activeQty = Math.max(1, activeQty + delta);
+            document.getElementById('modal-qty').innerText = activeQty;
+        }
+
+        // Adicionar ao Carrinho
+        function addToCart() {
+            const notes = document.getElementById('modal-notes').value;
+            cart.push({ product: activeProduct, qty: activeQty, notes: notes });
+            closeProductModal();
+            updateCartUI();
+        }
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // Atualizar Interface do Carrinho
+        function updateCartUI() {
+            const floater = document.getElementById('cart-floater');
+            if (cart.length > 0) {
+                floater.style.display = 'block';
+                const total = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
+                document.getElementById('cart-count').innerText = `${cart.reduce((a,b)=>a+b.qty,0)} Itens`;
+                document.getElementById('cart-total-float').innerText = total.toFixed(2);
+            } else {
+                floater.style.display = 'none';
+                closeCart();
+            }
+            renderCartModal();
+        }
+
+        // Modal Carrinho / Checkout
+        function openCart() { document.getElementById('cart-modal').style.display = 'flex'; }
+        function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
+
+        function renderCartModal() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = cart.map((item, i) => `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-sm text-white">${item.qty}x ${item.product.name}</h4>
+                        <span class="text-green-400 text-xs font-bold">R$ ${(item.product.price * item.qty).toFixed(2)}</span>
+                        ${item.notes ? `<p class="text-xs text-slate-400">Obs: ${item.notes}</p>` : ''}
+                    </div>
+                    <button onclick="removeCartItem(${i})" class="text-red-400 p-2 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
+            const fee = deliveryMode === 'delivery' ? DELIVERY_FEE : 0;
+            const total = subtotal + fee;
+
+            document.getElementById('checkout-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('checkout-fee').innerText = `R$ ${fee.toFixed(2)}`;
+            document.getElementById('checkout-total').innerText = total.toFixed(2);
+        }
+
+        // Modo de Entrega (Delivery/Retirada)
+        function setDelivery(mode) {
+            deliveryMode = mode;
+            const btnDel = document.getElementById('btn-delivery');
+            const btnPick = document.getElementById('btn-pickup');
+            const addressField = document.getElementById('address-field');
+
+            if (mode === 'delivery') {
+                btnDel.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500";
+                btnPick.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700";
+                addressField.style.display = 'block';
+            } else {
+                btnPick.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500";
+                btnDel.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700";
+                addressField.style.display = 'none';
+            }
+            renderCartModal();
+        }
+
+        // Enviar para WhatsApp
+        function sendOrder() {
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+            const address = document.getElementById('c-address').value;
+            const payment = document.getElementById('c-payment').value;
+
+            if (!name || !phone) return alert("Por favor, preencha seu nome e telefone!");
+            if (deliveryMode === 'delivery' && !address) return alert("Preencha o endereço de entrega!");
+
+            const subtotal = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
+            const fee = deliveryMode === 'delivery' ? DELIVERY_FEE : 0;
+            const total = subtotal + fee;
+
+            let text = `*🍕 NOVO PEDIDO - BELLA PIZZA*\n`;
+            text += `👤 *Cliente:* ${name}\n📞 *Tel:* ${phone}\n📦 *Tipo:* ${deliveryMode === 'delivery' ? 'Entrega' : 'Retirada no Balcão'}\n`;
+            if (deliveryMode === 'delivery') text += `📍 *Endereço:* ${address}\n`;
+            
+            text += `\n*ITENS:*\n`;
+            cart.forEach(item => {
+                text += `• ${item.qty}x ${item.product.name} (R$ ${(item.product.price * item.qty).toFixed(2)})\n`;
+                if (item.notes) text += `  _Obs: ${item.notes}_\n`;
+            });
+
+            text += `\n💰 *Subtotal:* R$ ${subtotal.toFixed(2)}\n🛵 *Taxa:* R$ ${fee.toFixed(2)}\n💳 *Total:* *R$ ${total.toFixed(2)}*\n💵 *Pagamento:* ${payment}`;
+
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/${STORE_PHONE}?text=${encoded}`, '_blank');
+        }
+
+        // Inicialização
+        renderCategories();
+        renderProducts();
+    </script>
+</body>
+</html>
