@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,7 @@
 </head>
 <body class="pb-24">
 
-    <!-- NAVEGAÇÃO SUPERIOR GLOBAL (ESTILO DA SUA IMAGEM COM O BOTÃO CONTA) -->
+    <!-- NAVEGAÇÃO SUPERIOR GLOBAL (IGUAL AO PRINT) -->
     <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 px-4 py-3 shadow-xl flex justify-between items-center">
         <div class="font-extrabold text-sm text-white flex items-center gap-2">
             <i class="fa-solid fa-store text-red-500"></i> <span id="header-store-name">Plataforma SaaS</span>
@@ -118,23 +118,23 @@
             <div>
                 <span class="bg-blue-500/10 text-blue-400 text-xs font-extrabold px-3 py-1 rounded-full border border-blue-500/20 uppercase tracking-wider">Painel Master Exclusivo</span>
                 <h1 class="text-3xl font-extrabold text-white mt-2">Central do Dono (SaaS)</h1>
-                <p class="text-slate-400 text-sm mt-1">Cadastre empresas, defina acessos de lojistas e gere links exclusivos.</p>
+                <p class="text-slate-400 text-sm mt-1">Cadastre empresas, crie o site completo para o cliente e gere o link final de pedidos.</p>
             </div>
             <button onclick="switchView('store')" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300">Voltar</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Criar Loja -->
+            <!-- Criar Loja / Configurar Cliente -->
             <div class="bg-slate-900/90 p-6 rounded-3xl border border-slate-800 shadow-2xl h-fit space-y-4">
-                <h3 class="font-bold text-white text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-building-user text-blue-500"></i> Criar Acesso para Lojista</h3>
+                <h3 class="font-bold text-white text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-building-user text-blue-500"></i> Criar Site para o Cliente</h3>
                 <input type="text" id="m-id" placeholder="ID (ex: pizzaria-milan)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 <input type="text" id="m-name" placeholder="Nome do Estabelecimento" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 <input type="email" id="m-email" placeholder="E-mail de Acesso do Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 <input type="password" id="m-pass" placeholder="Senha de Acesso do Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
-                <input type="text" id="m-phone" placeholder="WhatsApp (5511999999999)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
+                <input type="text" id="m-phone" placeholder="WhatsApp do Lojista (5511999999999)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1 font-bold">Logomarca (PNG ou JPG)</label>
+                    <label class="block text-xs text-slate-400 mb-1 font-bold">Logomarca (PNG com Transparência ou JPG)</label>
                     <input type="file" accept="image/*" onchange="handleImageUpload(event, 'm-logo-val')" class="text-xs text-slate-400 w-full bg-slate-950 p-2 rounded-xl border border-slate-800">
                     <input type="hidden" id="m-logo-val">
                 </div>
@@ -145,18 +145,18 @@
                     <input type="hidden" id="m-cover-val">
                 </div>
 
-                <button onclick="saveNewStore()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition shadow-lg shadow-blue-600/20">Criar Acesso & Gerar Link</button>
+                <button onclick="saveNewStore()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition shadow-lg shadow-blue-600/20">Criar Site & Gerar Link</button>
             </div>
 
-            <!-- Lista de Lojas -->
+            <!-- Lista de Lojas Criadas -->
             <div class="md:col-span-2 bg-slate-900/90 p-6 rounded-3xl border border-slate-800 shadow-2xl">
-                <h3 class="font-bold text-white text-lg mb-4">Empresas Cadastradas na Plataforma</h3>
+                <h3 class="font-bold text-white text-lg mb-4">Empresas e Sites Criados</h3>
                 <div id="master-stores-list" class="space-y-4"></div>
             </div>
         </div>
     </div>
 
-    <!-- ================= MODAL "ENTRAR COMO" (IGUAL AO SEU PRINT) ================= -->
+    <!-- ================= MODAL "ENTRAR COMO" (IGUAL AO PRINT) ================= -->
     <div id="account-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl text-center relative animate-fade-in">
             <h3 class="text-lg font-extrabold text-white mb-6">Entrar como</h3>
@@ -192,6 +192,11 @@
                 <i class="fa-solid fa-list-check text-amber-500"></i> Meus Pedidos
             </button>
 
+            <!-- NOVO BOTÃO DE ACESSO MASTER DENTRO DO MODAL CONTA -->
+            <button onclick="openMasterAuthFromModal()" class="w-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 p-3.5 rounded-2xl flex items-center justify-center gap-3 mb-4 transition font-bold text-sm text-blue-400 shadow-md">
+                <i class="fa-solid fa-shield-halved"></i> Sou o Administrador Master (Dono)
+            </button>
+
             <button onclick="closeAccountModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-2xl transition shadow-lg shadow-red-600/20">Fechar</button>
         </div>
     </div>
@@ -223,7 +228,7 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <h2 class="text-2xl font-black text-white">Login Master Admin</h2>
-                <p class="text-xs text-slate-400 mt-1">Área exclusiva do proprietário do sistema</p>
+                <p class="text-xs text-slate-400 mt-1">matthecarvalho@gmail.com</p>
             </div>
             <div class="space-y-4">
                 <input type="email" id="master-email" placeholder="E-mail do Administrador" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-sm text-white focus:border-blue-500 outline-none">
@@ -406,6 +411,10 @@
             } else if (role === 'pedidos') {
                 alert(orders.length > 0 ? `Você tem ${orders.length} pedido(s) registrado(s) nesta sessão.` : 'Nenhum pedido recente encontrado.');
             }
+        }
+        function openMasterAuthFromModal() {
+            closeAccountModal();
+            document.getElementById('master-auth-modal').style.display = 'flex';
         }
 
         // --- CLIENTE / STOREFRONT ---
@@ -735,7 +744,7 @@
             stores.push(newStore);
             localStorage.setItem('saas_stores', JSON.stringify(stores));
 
-            alert('Acesso do Lojista criado com sucesso! Entregue o link exclusivo para ele.');
+            alert('Site do cliente criado com sucesso! Entregue o link exclusivo para ele.');
             renderMasterStores();
         }
 
@@ -747,7 +756,7 @@
                         <div>
                             <h4 class="font-extrabold text-white text-base">${s.name}</h4>
                             <p class="text-xs text-slate-400">Login Lojista: <span class="text-amber-400 font-mono">${s.email}</span> / Senha: <span class="text-amber-400 font-mono">${s.pass}</span></p>
-                            <p class="text-xs text-blue-400 font-mono mt-0.5">Link Exclusivo: ?store=${s.id}</p>
+                            <p class="text-xs text-blue-400 font-mono mt-0.5">Link de Pedidos p/ Cliente: ?store=${s.id}</p>
                         </div>
                     </div>
                     <div class="flex gap-2">
@@ -768,13 +777,7 @@
             window.location.search = `?store=${storeId}`;
         }
 
-        // Para abrir o modal master através de um atalho escondido ou duplo clique no rodapé se necessário:
-        document.getElementById('header-store-name').addEventListener('dblclick', () => {
-            document.getElementById('master-auth-modal').style.display = 'flex';
-        });
-
         initApp();
     </script>
 </body>
 </html>
-
