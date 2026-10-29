@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardápio Digital & Pedidos WhatsApp</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Cardápio Digital SaaS & Gestão</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -16,50 +15,130 @@
 </head>
 <body class="pb-24">
 
-    <!-- CABEÇALHO -->
-    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 px-4 py-3 shadow-md flex justify-between items-center">
+    <!-- NAVEGAÇÃO SUPERIOR GLOBAL -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 px-4 py-3 shadow-md flex justify-between items-center">
         <div class="font-bold text-lg text-white flex items-center gap-2">
-            <i class="fa-solid fa-store text-red-500"></i> Bella Pizza & Burger
+            <i class="fa-solid fa-store text-red-500"></i> <span id="header-store-name">Cardápio SaaS</span>
         </div>
-        <div class="text-sm text-slate-300"><i class="fa-regular fa-clock text-amber-500"></i> 18:00 - 23:30</div>
+        <div class="flex items-center gap-2">
+            <button onclick="switchView('store')" class="px-3 py-1.5 rounded-lg text-sm bg-red-600 text-white font-medium">Ver Loja</button>
+            <button onclick="switchView('admin_empresario')" class="px-3 py-1.5 rounded-lg text-sm bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium">Painel Empresário</button>
+            <button onclick="switchView('admin_master')" class="px-3 py-1.5 rounded-lg text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium"><i class="fa-solid fa-shield-halved"></i> Master Admin</button>
+        </div>
     </header>
 
-    <!-- CAPA E LOGO -->
-    <main class="max-w-5xl mx-auto px-4 py-6">
-        <div class="relative rounded-2xl overflow-hidden mb-6 h-48 bg-slate-800 shadow-lg">
-            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1200" alt="Capa" class="w-full h-full object-cover opacity-60">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent flex flex-col justify-end p-6">
+    <!-- ================= 1. VISÃO DO CLIENTE (STOREFRONT) ================= -->
+    <div id="view-store" class="max-w-5xl mx-auto px-4 py-6">
+        <div id="store-banner" class="relative rounded-2xl overflow-hidden mb-6 h-48 bg-slate-800 shadow-lg bg-cover bg-center">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-6">
                 <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&q=80&w=200" alt="Logo" class="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover">
+                    <img id="store-logo-img" src="" alt="Logo" class="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover bg-white">
                     <div>
-                        <h1 class="text-3xl font-bold text-white">Bella Pizza & Burger</h1>
-                        <p class="text-slate-300 text-sm">A melhor da região</p>
+                        <h1 id="store-title" class="text-3xl font-bold text-white">Carregando...</h1>
+                        <p id="store-hours" class="text-slate-300 text-sm"></p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CATEGORIAS -->
-        <div class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide" id="categories-container">
-            <!-- Categorias renderizadas via JS -->
+        <!-- Categorias -->
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide" id="categories-container"></div>
+
+        <!-- Produtos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="products-container"></div>
+    </div>
+
+    <!-- ================= 2. PAINEL DO EMPRESÁRIO ================= -->
+    <div id="view-admin_empresario" class="max-w-5xl mx-auto px-4 py-6 hidden">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-chart-line text-amber-500"></i> Painel do Empresário</h1>
+                <p class="text-slate-400 text-sm" id="admin-store-subtitle">Gerencie seu cardápio, produtos e pedidos em tempo real</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="setAdminTab('kanban')" id="tab-btn-kanban" class="px-4 py-2 rounded-xl text-sm font-bold bg-amber-600 text-white">Pedidos Kanban</button>
+                <button onclick="setAdminTab('metrics')" id="tab-btn-metrics" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-700 text-slate-300">Métricas</button>
+                <button onclick="setAdminTab('catalog')" id="tab-btn-catalog" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-700 text-slate-300">Produtos & Categorias</button>
+            </div>
         </div>
 
-        <!-- PRODUTOS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="products-container">
-            <!-- Produtos renderizados via JS -->
+        <!-- Conteúdo Kanban -->
+        <div id="admin-content-kanban" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Colunas Kanban geradas via JS -->
         </div>
-    </main>
+
+        <!-- Conteúdo Métricas -->
+        <div id="admin-content-metrics" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                    <p class="text-xs text-slate-400 uppercase font-bold">Faturamento Total</p>
+                    <h3 class="text-2xl font-extrabold text-green-400 mt-1" id="metric-revenue">R$ 0,00</h3>
+                </div>
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                    <p class="text-xs text-slate-400 uppercase font-bold">Total de Pedidos</p>
+                    <h3 class="text-2xl font-extrabold text-white mt-1" id="metric-orders">0</h3>
+                </div>
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                    <p class="text-xs text-slate-400 uppercase font-bold">Ticket Médio</p>
+                    <h3 class="text-2xl font-extrabold text-amber-400 mt-1" id="metric-ticket">R$ 0,00</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Produtos & Categorias -->
+        <div id="admin-content-catalog" class="hidden bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <h3 class="text-lg font-bold text-white mb-4">Seus Produtos Cadastrados</h3>
+            <div id="admin-products-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- ================= 3. MASTER ADMIN (DONO DO SISTEMA) ================= -->
+    <div id="view-admin_master" class="max-w-5xl mx-auto px-4 py-6 hidden">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 mb-6">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-blue-500"></i> Master Admin - Cadastro de Lojas</h1>
+            <p class="text-slate-400 text-sm">Crie empresas, configure logomarcas (PNG/JPG), fundos e gere links exclusivos para seus clientes.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Formulário Nova Loja -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 h-fit space-y-4">
+                <h3 class="font-bold text-white text-lg">Criar / Configurar Empresa</h3>
+                <input type="text" id="m-id" placeholder="ID da Loja (ex: pizzaria-do-joao)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                <input type="text" id="m-name" placeholder="Nome do Estabelecimento" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                <input type="text" id="m-phone" placeholder="WhatsApp (ex: 5511999999999)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Logomarca (URL ou Arquivo PNG/JPG)</label>
+                    <input type="text" id="m-logo" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white mb-2">
+                    <input type="file" accept="image/*" onchange="handleImageUpload(event, 'm-logo')" class="text-xs text-slate-400">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Imagem de Fundo / Capa (URL)</label>
+                    <input type="text" id="m-cover" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                </div>
+
+                <button onclick="saveNewStore()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition">Salvar e Gerar Link</button>
+            </div>
+
+            <!-- Lista de Lojas Cadastradas -->
+            <div class="md:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="font-bold text-white text-lg mb-4">Empresas na Plataforma</h3>
+                <div id="master-stores-list" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- BOTÃO CARRINHO FLUTUANTE -->
     <div id="cart-floater" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-900/95 border-t border-slate-800 z-40 hidden">
-        <button onclick="openCart()" class="w-full max-w-5xl mx-auto bg-red-600 hover:bg-red-700 text-white p-4 rounded-xl flex justify-between font-bold shadow-lg transition">
+        <button onclick="openCart()" class="w-full max-w-5xl mx-auto bg-red-600 hover:bg-red-700 text-white p-4 rounded-xl flex justify-between font-bold shadow-lg">
             <span id="cart-count">0 Itens</span>
             <span>Ver Carrinho • R$ <span id="cart-total-float">0.00</span></span>
         </button>
     </div>
 
     <!-- MODAL DO PRODUTO -->
-    <div id="product-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4">
+    <div id="product-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
         <div class="bg-slate-800 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
             <img id="modal-img" src="" class="w-full h-48 object-cover">
             <div class="p-5">
@@ -80,8 +159,8 @@
         </div>
     </div>
 
-    <!-- MODAL DO CARRINHO E CHECKOUT -->
-    <div id="cart-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4">
+    <!-- MODAL DE CHECKOUT & ENCOMENDAS AGENDADAS -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
         <div class="bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl">
             <div class="p-4 border-b border-slate-700 flex justify-between items-center">
                 <h2 class="font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-bag-shopping text-red-500"></i> Seu Pedido</h2>
@@ -89,9 +168,7 @@
             </div>
             
             <div class="p-4 overflow-y-auto flex-1 space-y-4">
-                <div id="cart-items" class="space-y-3">
-                    <!-- Itens do carrinho via JS -->
-                </div>
+                <div id="cart-items" class="space-y-3"></div>
 
                 <form id="checkout-form" class="space-y-3 pt-4 border-t border-slate-700">
                     <h3 class="text-sm font-bold text-slate-300 uppercase">Dados da Entrega</h3>
@@ -103,25 +180,22 @@
                         <button type="button" id="btn-pickup" onclick="setDelivery('pickup')" class="flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700">Retirada</button>
                     </div>
 
-                    <div id="address-field">
-                        <input type="text" id="c-address" placeholder="Endereço Completo e Bairro" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
-                    </div>
+                    <input type="text" id="c-address" placeholder="Endereço Completo e Bairro" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
 
-                    <select id="c-payment" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
-                        <option value="Pix">Pagamento via Pix</option>
-                        <option value="Cartão">Cartão (na entrega)</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                    </select>
+                    <!-- CAIXINHA DE ENCOMENDAS AGENDADAS -->
+                    <div id="scheduling-box" class="hidden bg-amber-950/40 p-4 rounded-xl border border-amber-600/50 space-y-2">
+                        <label class="text-amber-400 text-xs font-bold flex items-center gap-1"><i class="fa-regular fa-calendar-days"></i> Encomenda Agendada Detectada</label>
+                        <div class="flex gap-2">
+                            <input type="date" id="c-date" class="w-1/2 bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                            <input type="time" id="c-time" class="w-1/2 bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        </div>
+                    </div>
                 </form>
             </div>
             
             <div class="p-4 border-t border-slate-700 bg-slate-900 rounded-b-2xl">
-                <div class="flex justify-between text-slate-400 text-sm mb-1">
-                    <span>Subtotal</span> <span id="checkout-subtotal">R$ 0.00</span>
-                </div>
-                <div class="flex justify-between text-slate-400 text-sm mb-3">
-                    <span>Taxa de Entrega</span> <span id="checkout-fee">R$ 5.00</span>
-                </div>
+                <div class="flex justify-between text-slate-400 text-sm mb-1"><span>Subtotal</span> <span id="checkout-subtotal">R$ 0.00</span></div>
+                <div class="flex justify-between text-slate-400 text-sm mb-3"><span>Taxa de Entrega</span> <span id="checkout-fee">R$ 5.00</span></div>
                 <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition">
                     <i class="fa-brands fa-whatsapp text-lg"></i> Enviar Pedido (R$ <span id="checkout-total">0.00</span>)
                 </button>
@@ -131,43 +205,93 @@
 
     <!-- JAVASCRIPT DO SISTEMA -->
     <script>
-        // Configurações da Loja
-        const STORE_PHONE = "5511999999999"; // Coloque seu número aqui
-        const DELIVERY_FEE = 5.00;
-
-        // Banco de Dados de Produtos
-        const products = [
-            { id: 1, name: 'Pizza Calabresa', category: 'Pizzas', price: 48.90, desc: 'Molho, muçarela, calabresa e cebola.', img: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400' },
-            { id: 2, name: 'Pizza Marguerita', category: 'Pizzas', price: 45.90, desc: 'Muçarela, tomate e manjericão fresco.', img: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&q=80&w=400' },
-            { id: 3, name: 'Smash Burger Duplo', category: 'Lanches', price: 32.90, desc: 'Dois blends, cheddar, pão brioche.', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400' },
-            { id: 4, name: 'Coca-Cola 2L', category: 'Bebidas', price: 14.00, desc: 'Bem gelada.', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
-            { id: 5, name: 'Pudim Caseiro', category: 'Sobremesas', price: 12.00, desc: 'Pudim de leite condensado.', img: 'https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?auto=format&fit=crop&q=80&w=400' }
+        // Banco de Dados Local Inicial
+        let stores = JSON.parse(localStorage.getItem('saas_stores')) || [
+            {
+                id: 'bella-pizza',
+                name: 'Bella Pizza & Burger',
+                phone: '5511999999999',
+                logo: 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&q=80&w=200',
+                cover: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1200',
+                hours: '18:00 - 23:30',
+                deliveryFee: 5.00
+            }
         ];
 
-        const categories = ['Todos', 'Pizzas', 'Lanches', 'Bebidas', 'Sobremesas'];
-        let activeCategory = 'Todos';
+        let products = JSON.parse(localStorage.getItem('saas_products')) || [
+            { id: 1, storeId: 'bella-pizza', name: 'Pizza Calabresa', category: 'Pizzas', price: 48.90, desc: 'Molho, muçarela, calabresa.', img: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400', available: true },
+            { id: 2, storeId: 'bella-pizza', name: 'Kit Festa Aniversário', category: '📅 Encomendas Agendadas', price: 150.00, desc: '2 Pizzas G + Bolo + Refris', img: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=400', available: true }
+        ];
+
+        let orders = JSON.parse(localStorage.getItem('saas_orders')) || [
+            { id: 101, storeId: 'bella-pizza', customer: 'Carlos Silva', total: 53.90, status: 'Pendente', items: '1x Pizza Calabresa', date: new Date().toISOString() }
+        ];
+
+        // Identificar Loja Atual via URL (?store=id)
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentStoreId = urlParams.get('store') || 'bella-pizza';
+        let currentStore = stores.find(s => s.id === currentStoreId) || stores[0];
+
         let cart = [];
         let deliveryMode = 'delivery';
         let activeProduct = null;
         let activeQty = 1;
+        let currentCategory = 'Todos';
 
-        // Renderizar Categorias
+        // Inicialização
+        function initApp() {
+            document.getElementById('header-store-name').innerText = currentStore.name;
+            document.getElementById('store-title').innerText = currentStore.name;
+            document.getElementById('store-hours').innerText = `Funcionamento: ${currentStore.hours}`;
+            document.getElementById('store-logo-img').src = currentStore.logo;
+            document.getElementById('store-banner').style.backgroundImage = `url('${currentStore.cover}')`;
+            
+            renderCategories();
+            renderProducts();
+            renderKanban();
+            renderMetrics();
+            renderAdminProducts();
+            renderMasterStores();
+        }
+
+        // Alternar Visões (Cliente, Empresário, Master)
+        function switchView(view) {
+            document.getElementById('view-store').style.display = view === 'store' ? 'block' : 'none';
+            document.getElementById('view-admin_empresario').style.display = view === 'admin_empresario' ? 'block' : 'none';
+            document.getElementById('view-admin_master').style.display = view === 'admin_master' ? 'block' : 'none';
+            document.getElementById('cart-floater').style.display = (view === 'store' && cart.length > 0) ? 'block' : 'none';
+        }
+
+        // Categorias e Produtos do Cliente
+        function getStoreCategories() {
+            const storeProds = products.filter(p => p.storeId === currentStore.id);
+            const cats = ['Todos', ...new Set(storeProds.map(p => p.category))];
+            return cats;
+        }
+
         function renderCategories() {
+            const cats = getStoreCategories();
             const container = document.getElementById('categories-container');
-            container.innerHTML = categories.map(cat => `
-                <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition ${activeCategory === cat ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-300'}">
+            container.innerHTML = cats.map(cat => `
+                <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition ${currentCategory === cat ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-300'}">
                     ${cat}
                 </button>
             `).join('');
         }
 
-        // Renderizar Produtos
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
         function renderProducts() {
+            const storeProds = products.filter(p => p.storeId === currentStore.id);
+            const filtered = currentCategory === 'Todos' ? storeProds : storeProds.filter(p => p.category === currentCategory);
             const container = document.getElementById('products-container');
-            const filtered = activeCategory === 'Todos' ? products : products.filter(p => p.category === activeCategory);
             
             container.innerHTML = filtered.map(p => `
-                <div onclick="openProduct(${p.id})" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 flex flex-col cursor-pointer hover:border-red-500 transition">
+                <div onclick="openProduct(${p.id})" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 flex flex-col cursor-pointer hover:border-red-500 transition ${!p.available ? 'opacity-50' : ''}">
                     <img src="${p.img}" class="w-full h-40 object-cover">
                     <div class="p-4 flex flex-col flex-1 justify-between">
                         <div>
@@ -183,16 +307,10 @@
             `).join('');
         }
 
-        // Filtro de Categoria
-        function filterCategory(cat) {
-            activeCategory = cat;
-            renderCategories();
-            renderProducts();
-        }
-
-        // Modal de Produto
+        // Modal de Produto & Carrinho
         function openProduct(id) {
             activeProduct = products.find(p => p.id === id);
+            if (!activeProduct.available) return alert('Produto indisponível no momento.');
             activeQty = 1;
             document.getElementById('modal-img').src = activeProduct.img;
             document.getElementById('modal-title').innerText = activeProduct.name;
@@ -202,34 +320,24 @@
             document.getElementById('product-modal').style.display = 'flex';
         }
 
-        function closeProductModal() {
-            document.getElementById('product-modal').style.display = 'none';
-        }
+        function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
+        function changeQty(d) { activeQty = Math.max(1, activeQty + d); document.getElementById('modal-qty').innerText = activeQty; }
 
-        function changeQty(delta) {
-            activeQty = Math.max(1, activeQty + delta);
-            document.getElementById('modal-qty').innerText = activeQty;
-        }
-
-        // Adicionar ao Carrinho
         function addToCart() {
             const notes = document.getElementById('modal-notes').value;
-            cart.push({ product: activeProduct, qty: activeQty, notes: notes });
+            cart.push({ product: activeProduct, qty: activeQty, notes });
             closeProductModal();
             updateCartUI();
         }
 
-        function removeCartItem(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        // Atualizar Interface do Carrinho
         function updateCartUI() {
             const floater = document.getElementById('cart-floater');
+            const hasScheduled = cart.some(i => i.product.category.includes('Encomendas'));
+            document.getElementById('scheduling-box').style.display = hasScheduled ? 'block' : 'none';
+
             if (cart.length > 0) {
                 floater.style.display = 'block';
-                const total = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
+                const total = cart.reduce((a, b) => a + (b.product.price * b.qty), 0);
                 document.getElementById('cart-count').innerText = `${cart.reduce((a,b)=>a+b.qty,0)} Itens`;
                 document.getElementById('cart-total-float').innerText = total.toFixed(2);
             } else {
@@ -239,7 +347,6 @@
             renderCartModal();
         }
 
-        // Modal Carrinho / Checkout
         function openCart() { document.getElementById('cart-modal').style.display = 'flex'; }
         function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
 
@@ -250,73 +357,198 @@
                     <div>
                         <h4 class="font-bold text-sm text-white">${item.qty}x ${item.product.name}</h4>
                         <span class="text-green-400 text-xs font-bold">R$ ${(item.product.price * item.qty).toFixed(2)}</span>
-                        ${item.notes ? `<p class="text-xs text-slate-400">Obs: ${item.notes}</p>` : ''}
                     </div>
-                    <button onclick="removeCartItem(${i})" class="text-red-400 p-2 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    <button onclick="cart.splice(${i},1); updateCartUI();" class="text-red-400 p-2"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('');
 
-            const subtotal = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
-            const fee = deliveryMode === 'delivery' ? DELIVERY_FEE : 0;
-            const total = subtotal + fee;
-
-            document.getElementById('checkout-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+            const sub = cart.reduce((a, b) => a + (b.product.price * b.qty), 0);
+            const fee = deliveryMode === 'delivery' ? currentStore.deliveryFee : 0;
+            document.getElementById('checkout-subtotal').innerText = `R$ ${sub.toFixed(2)}`;
             document.getElementById('checkout-fee').innerText = `R$ ${fee.toFixed(2)}`;
-            document.getElementById('checkout-total').innerText = total.toFixed(2);
+            document.getElementById('checkout-total').innerText = (sub + fee).toFixed(2);
         }
 
-        // Modo de Entrega (Delivery/Retirada)
         function setDelivery(mode) {
             deliveryMode = mode;
-            const btnDel = document.getElementById('btn-delivery');
-            const btnPick = document.getElementById('btn-pickup');
-            const addressField = document.getElementById('address-field');
-
-            if (mode === 'delivery') {
-                btnDel.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500";
-                btnPick.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700";
-                addressField.style.display = 'block';
-            } else {
-                btnPick.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500";
-                btnDel.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700";
-                addressField.style.display = 'none';
-            }
+            document.getElementById('btn-delivery').className = mode === 'delivery' ? 'flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500' : 'flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700';
+            document.getElementById('btn-pickup').className = mode === 'pickup' ? 'flex-1 py-2 rounded-xl text-sm font-bold bg-red-600 text-white border border-red-500' : 'flex-1 py-2 rounded-xl text-sm font-bold bg-slate-900 text-slate-400 border border-slate-700';
+            document.getElementById('c-address').style.display = mode === 'delivery' ? 'block' : 'none';
             renderCartModal();
         }
 
-        // Enviar para WhatsApp
         function sendOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
             const address = document.getElementById('c-address').value;
-            const payment = document.getElementById('c-payment').value;
+            if (!name || !phone) return alert('Preencha nome e WhatsApp!');
 
-            if (!name || !phone) return alert("Por favor, preencha seu nome e telefone!");
-            if (deliveryMode === 'delivery' && !address) return alert("Preencha o endereço de entrega!");
+            const sub = cart.reduce((a, b) => a + (b.product.price * b.qty), 0);
+            const fee = deliveryMode === 'delivery' ? currentStore.deliveryFee : 0;
+            const total = sub + fee;
 
-            const subtotal = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
-            const fee = deliveryMode === 'delivery' ? DELIVERY_FEE : 0;
-            const total = subtotal + fee;
-
-            let text = `*🍕 NOVO PEDIDO - BELLA PIZZA*\n`;
-            text += `👤 *Cliente:* ${name}\n📞 *Tel:* ${phone}\n📦 *Tipo:* ${deliveryMode === 'delivery' ? 'Entrega' : 'Retirada no Balcão'}\n`;
+            let text = `*🍕 NOVO PEDIDO - ${currentStore.name.toUpperCase()}*\n`;
+            text += `👤 *Cliente:* ${name}\n📞 *Tel:* ${phone}\n📦 *Tipo:* ${deliveryMode === 'delivery' ? 'Entrega' : 'Retirada'}\n`;
             if (deliveryMode === 'delivery') text += `📍 *Endereço:* ${address}\n`;
-            
+
+            const hasScheduled = cart.some(i => i.product.category.includes('Encomendas'));
+            if (hasScheduled) {
+                const date = document.getElementById('c-date').value;
+                const time = document.getElementById('c-time').value;
+                text += `📅 *AGENDAMENTO:* ${date} às ${time}\n`;
+            }
+
             text += `\n*ITENS:*\n`;
-            cart.forEach(item => {
-                text += `• ${item.qty}x ${item.product.name} (R$ ${(item.product.price * item.qty).toFixed(2)})\n`;
-                if (item.notes) text += `  _Obs: ${item.notes}_\n`;
-            });
+            cart.forEach(i => { text += `• ${i.qty}x ${i.product.name} (R$ ${(i.product.price * i.qty).toFixed(2)})\n`; });
+            text += `\n💳 *Total:* *R$ ${total.toFixed(2)}*`;
 
-            text += `\n💰 *Subtotal:* R$ ${subtotal.toFixed(2)}\n🛵 *Taxa:* R$ ${fee.toFixed(2)}\n💳 *Total:* *R$ ${total.toFixed(2)}*\n💵 *Pagamento:* ${payment}`;
+            // Registrar Pedido no Painel do Empresário
+            orders.push({ id: Date.now(), storeId: currentStore.id, customer: name, total, status: 'Pendente', items: `${cart.length} itens`, date: new Date().toISOString() });
+            localStorage.setItem('saas_orders', JSON.stringify(orders));
 
-            const encoded = encodeURIComponent(text);
-            window.open(`https://wa.me/${STORE_PHONE}?text=${encoded}`, '_blank');
+            window.open(`https://wa.me/${currentStore.phone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+            cart = []; closeCart(); updateCartUI();
+            renderKanban(); renderMetrics();
         }
 
-        // Inicialização
-        renderCategories();
-        renderProducts();
+        // ================= PAINEL DO EMPRESÁRIO =================
+        function setAdminTab(tab) {
+            document.getElementById('admin-content-kanban').style.display = tab === 'kanban' ? 'grid' : 'none';
+            document.getElementById('admin-content-metrics').style.display = tab === 'metrics' ? 'block' : 'none';
+            document.getElementById('admin-content-catalog').style.display = tab === 'catalog' ? 'block' : 'none';
+            
+            document.getElementById('tab-btn-kanban').className = tab === 'kanban' ? 'px-4 py-2 rounded-xl text-sm font-bold bg-amber-600 text-white' : 'px-4 py-2 rounded-xl text-sm font-bold bg-slate-700 text-slate-300';
+            document.getElementById('tab-btn-metrics').className = tab === 'metrics' ? 'px-4 py-2 rounded-xl text-sm font-bold bg-amber-600 text-white' : 'px-4 py-2 rounded-xl text-sm font-bold bg-slate-700 text-slate-300';
+            document.getElementById('tab-btn-catalog').className = tab === 'catalog' ? 'px-4 py-2 rounded-xl text-sm font-bold bg-amber-600 text-white' : 'px-4 py-2 rounded-xl text-sm font-bold bg-slate-700 text-slate-300';
+        }
+
+        function renderKanban() {
+            const storeOrders = orders.filter(o => o.storeId === currentStore.id);
+            const statuses = ['Pendente', 'Em Preparo', 'Saiu p/ Entrega', 'Concluído'];
+            const container = document.getElementById('admin-content-kanban');
+            
+            container.innerHTML = statuses.map(status => `
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <h3 class="font-bold border-b border-slate-700 pb-2 mb-3 text-amber-400">${status}</h3>
+                    <div class="space-y-3">
+                        ${storeOrders.filter(o => o.status === status).map(o => `
+                            <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+                                <div class="font-bold text-sm text-white">#${o.id.toString().slice(-4)} - ${o.customer}</div>
+                                <div class="text-xs text-green-400 font-bold mb-2">R$ ${o.total.toFixed(2)}</div>
+                                <select onchange="updateOrderStatus(${o.id}, this.value)" class="w-full text-xs bg-slate-800 border border-slate-700 rounded p-1 text-white">
+                                    ${statuses.map(s => `<option ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+                                </select>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOrderStatus(id, newStatus) {
+            orders = orders.map(o => o.id === id ? {...o, status: newStatus} : o);
+            localStorage.setItem('saas_orders', JSON.stringify(orders));
+            renderKanban();
+        }
+
+        function renderMetrics() {
+            const storeOrders = orders.filter(o => o.storeId === currentStore.id);
+            const rev = storeOrders.reduce((a, b) => a + b.total, 0);
+            const count = storeOrders.length;
+            const ticket = count > 0 ? rev / count : 0;
+
+            document.getElementById('metric-revenue').innerText = `R$ ${rev.toFixed(2)}`;
+            document.getElementById('metric-orders').innerText = count;
+            document.getElementById('metric-ticket').innerText = `R$ ${ticket.toFixed(2)}`;
+        }
+
+        function renderAdminProducts() {
+            const storeProds = products.filter(p => p.storeId === currentStore.id);
+            const container = document.getElementById('admin-products-list');
+            container.innerHTML = storeProds.map(p => `
+                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-700">
+                    <div class="flex items-center gap-3">
+                        <img src="${p.img}" class="w-12 h-12 rounded object-cover">
+                        <div>
+                            <p class="font-bold text-sm text-white">${p.name} <span class="text-xs text-amber-400">(${p.category})</span></p>
+                            <p class="text-xs text-green-400">R$ ${p.price.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs">
+                        <span>${p.available ? 'Ativo' : 'Esgotado'}</span>
+                        <input type="checkbox" ${p.available ? 'checked' : ''} onchange="toggleProduct(${p.id})" class="accent-amber-500 w-4 h-4">
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        function toggleProduct(id) {
+            products = products.map(p => p.id === id ? {...p, available: !p.available} : p);
+            localStorage.setItem('saas_products', JSON.stringify(products));
+            renderProducts();
+            renderAdminProducts();
+        }
+
+        // ================= MASTER ADMIN (DONO) =================
+        function handleImageUpload(e, targetId) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(upload) {
+                    document.getElementById(targetId).value = upload.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveNewStore() {
+            const id = document.getElementById('m-id').value.trim().toLowerCase().replace(/\s+/g, '-');
+            const name = document.getElementById('m-name').value;
+            const phone = document.getElementById('m-phone').value;
+            const logo = document.getElementById('m-logo').value;
+            const cover = document.getElementById('m-cover').value;
+
+            if (!id || !name || !phone) return alert('Preencha ID, Nome e WhatsApp!');
+
+            const newStore = { id, name, phone, logo: logo || 'https://via.placeholder.com/150', cover: cover || 'https://via.placeholder.com/800', hours: '18:00 - 23:30', deliveryFee: 5.00 };
+            stores.push(newStore);
+            localStorage.setItem('saas_stores', JSON.stringify(stores));
+
+            alert('Loja criada com sucesso!');
+            renderMasterStores();
+        }
+
+        function renderMasterStores() {
+            const container = document.getElementById('master-stores-list');
+            container.innerHTML = stores.map(s => `
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <img src="${s.logo}" class="w-14 h-14 rounded-full object-cover border border-slate-700 bg-white">
+                        <div>
+                            <h4 class="font-bold text-white text-base">${s.name}</h4>
+                            <p class="text-xs text-slate-400 font-mono">Link: ?store=${s.id}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyLink('${s.id}')" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg text-xs font-bold text-white"><i class="fa-solid fa-copy"></i> Copiar Link</button>
+                        <button onclick="accessStore('${s.id}')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg text-xs font-bold text-white"><i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyLink(storeId) {
+            const link = `${window.location.origin}${window.location.pathname}?store=${storeId}`;
+            navigator.clipboard.writeText(link);
+            alert('Link copiado com sucesso:\n' + link);
+        }
+
+        function accessStore(storeId) {
+            window.location.search = `?store=${storeId}`;
+        }
+
+        // Executar inicialização
+        initApp();
     </script>
 </body>
 </html>
