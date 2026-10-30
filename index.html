@@ -118,15 +118,16 @@
             <div>
                 <span class="bg-blue-500/10 text-blue-400 text-xs font-extrabold px-3 py-1 rounded-full border border-blue-500/20 uppercase tracking-wider">Painel Master Exclusivo</span>
                 <h1 class="text-3xl font-extrabold text-white mt-2">Central do Dono (SaaS)</h1>
-                <p class="text-slate-400 text-sm mt-1">Cadastre empresas, crie o site completo para o cliente e gere o link final de pedidos.</p>
+                <p class="text-slate-400 text-sm mt-1">Cadastre empresas, gerencie logins, edite ou exclua links criados.</p>
             </div>
             <button onclick="switchView('store')" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300">Voltar</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Criar Loja / Configurar Cliente -->
+            <!-- Criar ou Editar Loja -->
             <div class="bg-slate-900/90 p-6 rounded-3xl border border-slate-800 shadow-2xl h-fit space-y-4">
-                <h3 class="font-bold text-white text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-building-user text-blue-500"></i> Criar Site para o Cliente</h3>
+                <h3 class="font-bold text-white text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-building-user text-blue-500"></i> <span id="form-title-action">Criar Site para o Cliente</span></h3>
+                <input type="hidden" id="m-edit-index" value="">
                 <input type="text" id="m-id" placeholder="ID (ex: pizzaria-milan)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 <input type="text" id="m-name" placeholder="Nome do Estabelecimento" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 <input type="email" id="m-email" placeholder="E-mail de Acesso do Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
@@ -134,7 +135,7 @@
                 <input type="text" id="m-phone" placeholder="WhatsApp do Lojista (5511999999999)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none">
                 
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1 font-bold">Logomarca (PNG com Transparência ou JPG)</label>
+                    <label class="block text-xs text-slate-400 mb-1 font-bold">Logomarca (PNG ou JPG)</label>
                     <input type="file" accept="image/*" onchange="handleImageUpload(event, 'm-logo-val')" class="text-xs text-slate-400 w-full bg-slate-950 p-2 rounded-xl border border-slate-800">
                     <input type="hidden" id="m-logo-val">
                 </div>
@@ -145,12 +146,15 @@
                     <input type="hidden" id="m-cover-val">
                 </div>
 
-                <button onclick="saveNewStore()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition shadow-lg shadow-blue-600/20">Criar Site & Gerar Link</button>
+                <div class="flex gap-2">
+                    <button onclick="saveNewStore()" id="btn-save-store" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-blue-600/20">Salvar Loja</button>
+                    <button onclick="resetStoreForm()" id="btn-cancel-store" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-3 rounded-xl font-bold transition">Cancelar</button>
+                </div>
             </div>
 
             <!-- Lista de Lojas Criadas -->
             <div class="md:col-span-2 bg-slate-900/90 p-6 rounded-3xl border border-slate-800 shadow-2xl">
-                <h3 class="font-bold text-white text-lg mb-4">Empresas e Sites Criados</h3>
+                <h3 class="font-bold text-white text-lg mb-4">Empresas e Links Criados</h3>
                 <div id="master-stores-list" class="space-y-4"></div>
             </div>
         </div>
@@ -712,7 +716,9 @@
             }
         }
 
+        // --- GERENCIAMENTO DE LOJAS NO MASTER ADMIN (CRIAR, EDITAR, EXCLUIR) ---
         function saveNewStore() {
+            const editIndex = document.getElementById('m-edit-index').value;
             const id = document.getElementById('m-id').value.trim().toLowerCase().replace(/\s+/g, '-');
             const name = document.getElementById('m-name').value;
             const email = document.getElementById('m-email').value;
@@ -723,34 +729,100 @@
 
             if (!id || !name || !email || !pass || !phone) return alert('Preencha todos os campos obrigatórios!');
 
-            const newStore = { 
-                id, name, email, pass, phone, 
-                logo: logo || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&q=80&w=200', 
-                cover: cover || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1200', 
-                hours: '18:00 - 23:30', deliveryFee: 5.00 
-            };
-            
-            stores.push(newStore);
-            localStorage.setItem('saas_stores', JSON.stringify(stores));
+            if (editIndex === "") {
+                // Criar nova loja
+                const existing = stores.find(s => s.id === id);
+                if (existing) return alert('Já existe uma loja com este ID. Escolha outro ID.');
 
-            alert('Site do cliente criado com sucesso! Entregue o link exclusivo para ele.');
+                const newStore = { 
+                    id, name, email, pass, phone, 
+                    logo: logo || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&q=80&w=200', 
+                    cover: cover || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1200', 
+                    hours: '18:00 - 23:30', deliveryFee: 5.00 
+                };
+                stores.push(newStore);
+                alert('Loja e link criados com sucesso!');
+            } else {
+                // Atualizar loja existente
+                const idx = parseInt(editIndex);
+                stores[idx].name = name;
+                stores[idx].email = email;
+                stores[idx].pass = pass;
+                stores[idx].phone = phone;
+                if (logo) stores[idx].logo = logo;
+                if (cover) stores[idx].cover = cover;
+                alert('Loja atualizada com sucesso!');
+            }
+
+            localStorage.setItem('saas_stores', JSON.stringify(stores));
+            resetStoreForm();
             renderMasterStores();
         }
 
+        function editStore(index) {
+            const s = stores[index];
+            document.getElementById('m-edit-index').value = index;
+            document.getElementById('m-id').value = s.id;
+            document.getElementById('m-id').disabled = true; // ID não pode ser alterado para não quebrar links
+            document.getElementById('m-name').value = s.name;
+            document.getElementById('m-email').value = s.email;
+            document.getElementById('m-pass').value = s.pass;
+            document.getElementById('m-phone').value = s.phone;
+            document.getElementById('m-logo-val').value = s.logo;
+            document.getElementById('m-cover-val').value = s.cover;
+
+            document.getElementById('form-title-action').innerText = 'Editar Site do Cliente';
+            document.getElementById('btn-save-store').innerText = 'Atualizar Loja';
+            document.getElementById('btn-cancel-store').style.display = 'block';
+        }
+
+        function deleteStore(index) {
+            if (confirm(`Tem certeza que deseja excluir a loja "${stores[index].name}"? O link deixará de funcionar.`)) {
+                stores.splice(index, 1);
+                localStorage.setItem('saas_stores', JSON.stringify(stores));
+                renderMasterStores();
+                alert('Loja excluída com sucesso.');
+            }
+        }
+
+        function resetStoreForm() {
+            document.getElementById('m-edit-index').value = '';
+            document.getElementById('m-id').value = '';
+            document.getElementById('m-id').disabled = false;
+            document.getElementById('m-name').value = '';
+            document.getElementById('m-email').value = '';
+            document.getElementById('m-pass').value = '';
+            document.getElementById('m-phone').value = '';
+            document.getElementById('m-logo-val').value = '';
+            document.getElementById('m-cover-val').value = '';
+
+            document.getElementById('form-title-action').innerText = 'Criar Site para o Cliente';
+            document.getElementById('btn-save-store').innerText = 'Criar Site & Gerar Link';
+            document.getElementById('btn-cancel-store').style.display = 'none';
+        }
+
         function renderMasterStores() {
-            document.getElementById('master-stores-list').innerHTML = stores.link ? '' : stores.map(s => `
+            const container = document.getElementById('master-stores-list');
+            if (stores.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-500">Nenhuma empresa cadastrada.</p>';
+                return;
+            }
+
+            container.innerHTML = stores.map((s, index) => `
                 <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 shadow-md">
                     <div class="flex items-center gap-4">
                         <img src="${s.logo}" class="w-16 h-16 rounded-2xl object-cover border border-slate-800 bg-white">
                         <div>
                             <h4 class="font-extrabold text-white text-base">${s.name}</h4>
                             <p class="text-xs text-slate-400">Login Lojista: <span class="text-amber-400 font-mono">${s.email}</span> / Senha: <span class="text-amber-400 font-mono">${s.pass}</span></p>
-                            <p class="text-xs text-blue-400 font-mono mt-0.5">Link de Pedidos p/ Cliente: ?store=${s.id}</p>
+                            <p class="text-xs text-blue-400 font-mono mt-0.5">Link p/ Cliente: ?store=${s.id}</p>
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="copyLink('${s.id}')" class="bg-blue-600 hover:bg-blue-700 px-3.5 py-2 rounded-xl text-xs font-bold text-white shadow-md"><i class="fa-solid fa-copy mr-1"></i> Copiar Link</button>
-                        <button onclick="accessStore('${s.id}')" class="bg-slate-800 hover:bg-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold text-white border border-slate-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Visitar</button>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="copyLink('${s.id}')" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs font-bold text-white shadow-md"><i class="fa-solid fa-copy mr-1"></i> Copiar Link</button>
+                        <button onclick="editStore(${index})" class="bg-amber-600 hover:bg-amber-700 px-3 py-2 rounded-xl text-xs font-bold text-white shadow-md"><i class="fa-solid fa-pen mr-1"></i> Editar</button>
+                        <button onclick="deleteStore(${index})" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold border border-red-500/30 transition"><i class="fa-solid fa-trash mr-1"></i> Excluir</button>
+                        <button onclick="accessStore('${s.id}')" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl text-xs font-bold text-white border border-slate-700"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Visitar</button>
                     </div>
                 </div>
             `).join('');
