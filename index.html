@@ -3,166 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardápio Digital SaaS</title>
+    <title>SaaS - Cardápio Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
         .glass-header { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body class="pb-28">
 
-    <!-- CABEÇALHO DINÂMICO (MUDA SE FOR CLIENTE OU ADMIN) -->
     <header class="glass-header sticky top-0 z-50 px-5 py-4 flex justify-between items-center">
         <div class="font-extrabold text-sm text-white flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center shadow-lg">
                 <i class="fa-solid fa-store text-white text-xs"></i>
             </div>
-            <span id="header-store-name" class="text-base">Cardápio Digital</span>
+            <span id="header-title" class="text-base">Plataforma SaaS</span>
         </div>
-        <div id="header-nav-buttons" class="flex items-center gap-5 text-xs font-bold text-slate-400">
-            <!-- Preenchido via JavaScript dependendo do link -->
+        <div id="header-nav" class="flex items-center gap-5 text-xs font-bold text-slate-400">
+            <!-- Dinâmico -->
         </div>
     </header>
 
-    <!-- ================= 1. VISÃO EXCLUSIVA DO CLIENTE (VITRINE) ================= -->
-    <div id="view-store" class="w-full">
+    <!-- 1. VISÃO DO CLIENTE (Aparece se houver ?store= na URL) -->
+    <div id="view-store" class="w-full hidden">
         <div id="store-banner" class="w-full h-56 md:h-72 bg-slate-800 bg-cover bg-center relative">
             <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/60 to-transparent"></div>
         </div>
-
         <div class="max-w-5xl mx-auto px-4 md:px-8 relative -mt-20">
             <div class="flex flex-col md:flex-row md:items-end gap-5 mb-8">
-                <img id="store-logo-img" src="" alt="Logo" class="w-28 h-28 md:w-36 md:h-36 rounded-3xl border-4 border-[#020617] shadow-2xl object-cover bg-slate-900 shrink-0">
+                <img id="store-logo-img" src="" class="w-28 h-28 md:w-36 md:h-36 rounded-3xl border-4 border-[#020617] shadow-2xl object-cover bg-slate-900 shrink-0">
                 <div class="pb-2">
-                    <h1 id="store-title" class="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-2">A carregar...</h1>
+                    <h1 id="store-title" class="text-3xl md:text-5xl font-extrabold text-white mb-2">Carregando...</h1>
                     <span id="store-hours" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-bold text-amber-400"><i class="fa-solid fa-clock"></i> <span></span></span>
                 </div>
             </div>
-
-            <div class="relative mb-8">
-                <i class="fa-solid fa-magnifying-glass absolute left-5 top-4 text-slate-400 text-lg"></i>
-                <input type="text" id="search-input" onkeyup="searchMenu(this.value)" placeholder="O que deseja pedir hoje?" class="w-full bg-slate-900 border border-slate-800 rounded-full pl-14 pr-5 py-4 text-sm text-white focus:border-red-500 outline-none shadow-lg">
-            </div>
-
-            <div class="flex gap-3 overflow-x-auto pb-4 mb-6 scrollbar-hide" id="categories-container"></div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5" id="products-container"></div>
         </div>
     </div>
 
-    <!-- ================= 2. PAINEL DE GESTÃO (ADMIN / LOJISTA) ================= -->
-    <div id="view-admin-area" class="max-w-7xl mx-auto px-4 py-8 hidden">
-        <!-- Tela de Login Inicial se não estiver logado -->
-        <div id="admin-login-box" class="max-w-md mx-auto py-12 text-center">
+    <!-- 2. TELA DE LOGIN / GESTÃO (Aparece se o link NÃO tiver ?store=) -->
+    <div id="view-admin-area" class="max-w-4xl mx-auto px-4 py-16">
+        
+        <!-- Caixa de Login -->
+        <div id="box-login" class="max-w-md mx-auto text-center">
             <div class="glass-card p-8 rounded-3xl shadow-2xl border border-slate-800">
-                <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20"><i class="fa-solid fa-store"></i></div>
+                <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
                 <h2 class="text-2xl font-black text-white mb-2">Área Administrativa</h2>
-                <p class="text-xs text-slate-400 mb-6">Insira as suas credenciais para aceder ao painel de gestão.</p>
+                <p class="text-xs text-slate-400 mb-6">Insira os seus dados de Dono do Sistema ou Lojista.</p>
                 <div class="space-y-4 text-left">
-                    <input type="email" id="global-email" placeholder="E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                    <input type="password" id="global-pass" placeholder="Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                    <button onclick="executeGlobalLogin()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Entrar</button>
+                    <input type="email" id="login-email" placeholder="E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                    <input type="password" id="login-senha" placeholder="Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                    <button onclick="fazerLoginGlobal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
+                        Entrar no Painel
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Painel do Lojista -->
-        <div id="panel-lojista" class="hidden space-y-6">
+        <!-- Painel Master (Dono do Sistema) -->
+        <div id="box-master-panel" class="hidden space-y-6">
             <div class="glass-card p-6 md:p-8 rounded-3xl flex justify-between items-center">
-                <div><h1 class="text-2xl font-extrabold text-white" id="admin-store-name">Loja</h1><p class="text-xs text-slate-400">Gestão de Pedidos</p></div>
-                <button onclick="logoutAdmin()" class="bg-red-500/20 text-red-400 px-4 py-2 rounded-xl text-xs font-bold">Sair</button>
-            </div>
-            <div id="admin-content-kanban" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-        </div>
-
-        <!-- Painel Master -->
-        <div id="panel-master" class="hidden space-y-6">
-            <div class="glass-card p-6 md:p-8 rounded-3xl flex justify-between items-center">
-                <div><h1 class="text-2xl font-extrabold text-white">Painel Master Global</h1></div>
-                <button onclick="logoutAdmin()" class="bg-red-500/20 text-red-400 px-4 py-2 rounded-xl text-xs font-bold">Sair</button>
-            </div>
-            <div class="glass-card p-6 rounded-3xl">
-                <h3 class="font-bold text-white mb-4">Lojas Ativas / Criar Lojas</h3>
-                <div class="space-y-3">
-                    <input type="text" id="m-id" placeholder="ID (ex: pizzaria-milan)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <input type="text" id="m-name" placeholder="Nome da Loja" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <input type="email" id="m-email" placeholder="E-mail Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <input type="text" id="m-pass" placeholder="Senha Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <input type="text" id="m-phone" placeholder="WhatsApp (5511...)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <input type="text" id="m-logo" placeholder="Link da Logo (URL)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <input type="text" id="m-cover" placeholder="Link da Capa (URL)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white">
-                    <button onclick="saveNewStore()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl">Salvar Nova Loja</button>
+                <div>
+                    <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-full uppercase">Painel do Dono (Master)</span>
+                    <h1 class="text-2xl font-extrabold text-white mt-2">Gestão Global do SaaS</h1>
                 </div>
-                <div id="master-stores-list" class="mt-6 space-y-3"></div>
+                <button onclick="logoutSistema()" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition">Sair</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modais do Cliente (Sacola, Pedidos, etc) -->
-    <div id="cart-floater" class="fixed bottom-6 left-0 right-0 px-4 z-40 hidden pointer-events-none">
-        <div class="max-w-2xl mx-auto pointer-events-auto">
-            <button onclick="openCart()" class="w-full bg-red-600 hover:bg-red-700 text-white p-4 rounded-full flex justify-between items-center font-bold shadow-2xl transition">
-                <div class="flex items-center gap-3"><div class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-xs" id="cart-count">0</div><span>Ver Sacola</span></div>
-                <span class="text-lg">R$ <span id="cart-total-float">0.00</span></span>
-            </button>
-        </div>
-    </div>
-
-    <div id="client-orders-modal" class="fixed inset-0 bg-[#020617]/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-        <div class="glass-card rounded-3xl p-6 max-w-lg w-full max-h-[85vh] flex flex-col relative">
-            <button onclick="document.getElementById('client-orders-modal').style.display='none'" class="absolute top-5 right-5 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h3 class="text-xl font-extrabold text-white mb-4">Meus Pedidos</h3>
-            <div id="client-orders-list" class="space-y-3 overflow-y-auto flex-1"></div>
-        </div>
-    </div>
-
-    <div id="product-modal" class="fixed inset-0 bg-[#020617]/80 backdrop-blur-md z-50 hidden items-end md:items-center justify-center sm:p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-t-3xl md:rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl">
-            <div class="relative h-64"><img id="modal-img" src="" class="w-full h-full object-cover"><button onclick="closeProductModal()" class="absolute top-4 right-4 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
-            <div class="p-6">
-                <h2 id="modal-title" class="text-2xl font-black mb-2 text-white"></h2>
-                <p id="modal-desc" class="text-sm text-slate-400 mb-6"></p>
-                <textarea id="modal-notes" placeholder="Observações (ex: sem cebola)" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-6 outline-none" rows="2"></textarea>
-                <div class="flex gap-4">
-                    <div class="flex items-center justify-between w-32 bg-slate-950 p-2 rounded-2xl border border-slate-800">
-                        <button onclick="changeQty(-1)" class="w-10 h-10 text-slate-400"><i class="fa-solid fa-minus"></i></button>
-                        <span id="modal-qty" class="font-bold text-white text-lg">1</span>
-                        <button onclick="changeQty(1)" class="w-10 h-10 text-red-500"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                    <button onclick="addToCart()" class="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold text-lg">Adicionar</button>
+            
+            <div class="glass-card p-6 md:p-8 rounded-3xl space-y-4">
+                <h3 class="font-bold text-white text-lg">Criar Nova Loja / Cliente</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="m-id" placeholder="ID da Loja (ex: pizzaria-milan)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-name" placeholder="Nome do Estabelecimento" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="email" id="m-email" placeholder="E-mail do Lojista" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-pass" placeholder="Senha do Lojista" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-phone" placeholder="WhatsApp (5511...)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-logo" placeholder="Link Direto da Logo (URL)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                 </div>
+                <button onclick="criarLojaMaster()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Salvar e Criar Loja</button>
+            </div>
+
+            <div class="glass-card p-6 md:p-8 rounded-3xl">
+                <h3 class="font-bold text-white text-lg mb-4">Lojas Registadas no Sistema</h3>
+                <div id="master-lista-lojas" class="space-y-3"></div>
             </div>
         </div>
+
     </div>
 
-    <div id="cart-modal" class="fixed inset-0 bg-[#020617]/80 backdrop-blur-md z-50 hidden items-end md:items-center justify-center sm:p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-t-3xl md:rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center"><h2 class="font-black text-xl text-white">A Sua Sacola</h2><button onclick="closeCart()" class="w-8 h-8 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
-            <div class="p-6 overflow-y-auto flex-1 space-y-6">
-                <div id="cart-items" class="space-y-4"></div>
-                <div class="space-y-4 pt-6 border-t border-slate-800">
-                    <input type="text" id="c-name" required placeholder="Seu Nome" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                    <input type="tel" id="c-phone" required placeholder="Seu WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                    <input type="text" id="c-address" placeholder="Morada Completa e Bairro" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                </div>
-            </div>
-            <div class="p-6 border-t border-slate-800 bg-slate-950">
-                <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold flex justify-center items-center gap-3 text-lg">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> Enviar Pedido (R$ <span id="checkout-total">0.00</span>)
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <audio id="order-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAWzFIaSbT-au2oz7_bEgxGsABi5TjDrig",
@@ -178,15 +115,11 @@
         const MASTER_EMAIL = "matthecarvalho@gmail.com";
         const MASTER_PASS = "Onerepublic";
 
-        let stores = [], products = [], orders = [];
-        let urlParams = new URLSearchParams(window.location.search);
-        let storeIdFromURL = urlParams.get('store');
-        let currentStore = null;
-        let loggedStoreId = localStorage.getItem('saas_logged_store') || null;
-        let isMasterLogged = localStorage.getItem('saas_master_logged') === 'true';
-        let cart = [], activeProduct = null, activeQty = 1, currentCategory = '';
+        let stores = [], products = [];
+        const urlParams = new URLSearchParams(window.location.search);
+        const storeId = urlParams.get('store');
 
-        window.loadDatabase = async function() {
+        window.initAppMaster = async function() {
             try {
                 const sSnap = await getDocs(collection(db, "stores"));
                 stores = sSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
@@ -194,209 +127,105 @@
                 const pSnap = await getDocs(collection(db, "products"));
                 products = pSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
 
-                const oSnap = await getDocs(collection(db, "orders"));
-                orders = oSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
-
-                // SE TEM ?store= na URL, o utilizador é um CLIENTE (Vê apenas a loja, sem acesso ao admin)
-                if (storeIdFromURL) {
-                    currentStore = stores.find(s => s.id === storeIdFromURL);
-                    if (!currentStore) {
-                        document.body.innerHTML = `<div class="min-h-screen flex items-center justify-center text-center text-white">Loja não encontrada.</div>`;
+                // SE TEM ?store= NO LINK -> É O CLIENTE A VER O CARDÁPIO
+                if (storeId) {
+                    const store = stores.find(s => s.id === storeId);
+                    if (!store) {
+                        document.body.innerHTML = `<div class="min-h-screen flex items-center justify-center text-white text-lg">Loja não encontrada.</div>`;
                         return;
                     }
-                    if (currentStore.status === 'suspended') {
-                        document.body.innerHTML = `<div class="min-h-screen flex items-center justify-center text-center text-white">Loja temporariamente indisponível.</div>`;
-                        return;
-                    }
-                    // Configura cabeçalho exclusivo para o cliente
-                    document.getElementById('header-nav-buttons').innerHTML = `
-                        <button onclick="openCart()" class="flex flex-col items-center hover:text-red-500 transition relative"><i class="fa-solid fa-bag-shopping mb-1 text-lg"></i> Sacola</button>
-                        <button onclick="openClientOrdersModal()" class="flex flex-col items-center hover:text-white transition"><i class="fa-solid fa-clock-rotate-left mb-1 text-lg"></i> Pedidos</button>
-                    `;
                     document.getElementById('view-store').style.display = 'block';
                     document.getElementById('view-admin-area').style.display = 'none';
-                    initStoreView();
-                } else {
-                    // Sem parâmetro store na URL: É A ÁREA DE GESTÃO (ADMIN / LOJISTA)
-                    document.getElementById('view-store').style.display = 'none';
-                    document.getElementById('view-admin-area').style.display = 'block';
-                    document.getElementById('header-nav-buttons').innerHTML = `
-                        <a href="index.html" class="text-white hover:text-amber-400 font-bold text-xs"><i class="fa-solid fa-house mr-1"></i> Início SaaS</a>
-                    `;
-                    checkAdminSession();
+                    document.getElementById('header-title').innerText = store.name;
+                    document.getElementById('store-title').innerText = store.name;
+                    document.getElementById('store-logo-img').src = store.logo;
+                    document.getElementById('store-banner').style.backgroundImage = `url('${store.cover}')`;
+                    
+                    const storeProds = products.filter(p => p.storeId === store.id);
+                    document.getElementById('products-container').innerHTML = storeProds.length ? storeProds.map(p => `
+                        <div class="glass-card rounded-2xl p-4 flex gap-4">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-white mb-1">${p.name}</h3>
+                                <p class="text-xs text-slate-400 mb-2">${p.desc}</p>
+                                <span class="font-black text-green-400">R$ ${p.price.toFixed(2)}</span>
+                            </div>
+                            <img src="${p.img}" class="w-24 h-24 rounded-xl object-cover">
+                        </div>
+                    `).join('') : '<p class="text-slate-400">Nenhum produto cadastrado.</p>';
+                    return;
                 }
-            } catch (err) { console.error(err); }
+
+                // SE NÃO TEM ?store= NO LINK -> VERIFICA SE JÁ ESTÁ LOGADO COMO MASTER
+                if (localStorage.getItem('saas_master_logged') === 'true') {
+                    mostrarPainelMaster();
+                }
+
+            } catch (e) {
+                console.error(e);
+            }
         };
 
-        function initStoreView() {
-            document.getElementById('header-store-name').innerText = currentStore.name;
-            document.getElementById('store-title').innerText = currentStore.name;
-            document.getElementById('store-hours').querySelector('span').innerText = `Aberto: ${currentStore.hours || '18:00 - 23:30'}`;
-            document.getElementById('store-logo-img').src = currentStore.logo;
-            document.getElementById('store-banner').style.backgroundImage = `url('${currentStore.cover}')`;
-            renderCategories(); renderProducts();
-        }
+        window.fazerLoginGlobal = function() {
+            const email = document.getElementById('login-email').value.trim();
+            const senha = document.getElementById('login-senha').value.trim();
 
-        function renderCategories() {
-            const storeProds = products.filter(p => p.storeId === currentStore.id);
-            const cats = [...new Set(storeProds.map(p => p.category))];
-            if (cats.length > 0 && !cats.includes(currentCategory)) currentCategory = cats[0];
-            document.getElementById('categories-container').innerHTML = cats.map(cat => `
-                <button onclick="filterCategory('${cat}')" class="px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition border ${currentCategory === cat ? 'bg-white text-slate-950 border-white shadow-lg' : 'bg-slate-900 text-slate-300 border-slate-700'}">${cat}</button>
-            `).join('');
-        }
-
-        window.filterCategory = function(cat) { currentCategory = cat; renderCategories(); renderProducts(); }
-        window.searchMenu = function(q) { renderProducts(q); }
-
-        function renderProducts(query = '') {
-            const storeProds = products.filter(p => p.storeId === currentStore.id);
-            let filtered = query ? storeProds.filter(p => p.name.toLowerCase().includes(query.toLowerCase())) : storeProds.filter(p => p.category === currentCategory);
-            document.getElementById('products-container').innerHTML = filtered.map(p => `
-                <div onclick="openProduct('${p.docId}')" class="glass-card rounded-2xl p-4 flex gap-4 cursor-pointer hover:border-red-500/50 transition ${!p.available ? 'opacity-40' : ''}">
-                    <div class="flex-1 flex flex-col justify-between">
-                        <div><h3 class="font-bold text-white mb-1">${p.name}</h3><p class="text-xs text-slate-400 line-clamp-2">${p.desc}</p></div>
-                        <span class="font-black text-green-400 text-base">R$ ${p.price.toFixed(2)}</span>
-                    </div>
-                    <img src="${p.img}" class="w-28 h-28 rounded-xl object-cover">
-                </div>
-            `).join('');
-        }
-
-        window.openProduct = function(docId) {
-            activeProduct = products.find(p => p.docId === docId);
-            if (!activeProduct.available) return alert('Produto indisponível.');
-            activeQty = 1;
-            document.getElementById('modal-img').src = activeProduct.img;
-            document.getElementById('modal-title').innerText = activeProduct.name;
-            document.getElementById('modal-desc').innerText = activeProduct.desc;
-            document.getElementById('modal-qty').innerText = activeQty;
-            document.getElementById('product-modal').style.display = 'flex';
-        }
-        window.closeProductModal = function() { document.getElementById('product-modal').style.display = 'none'; }
-        window.changeQty = function(d) { activeQty = Math.max(1, activeQty + d); document.getElementById('modal-qty').innerText = activeQty; }
-        window.addToCart = function() { cart.push({ product: activeProduct, qty: activeQty, notes: document.getElementById('modal-notes').value }); closeProductModal(); updateCartUI(); }
-
-        function updateCartUI() {
-            const floater = document.getElementById('cart-floater');
-            if (cart.length > 0) {
-                floater.style.display = 'block';
-                document.getElementById('cart-count').innerText = cart.reduce((a,b)=>a+b.qty,0);
-                document.getElementById('cart-total-float').innerText = cart.reduce((a,b)=>a+(b.product.price*b.qty),0).toFixed(2);
-            } else { floater.style.display = 'none'; closeCart(); }
-            renderCartModal();
-        }
-        window.openCart = function() { document.getElementById('cart-modal').style.display = 'flex'; }
-        window.closeCart = function() { document.getElementById('cart-modal').style.display = 'none'; }
-
-        function renderCartModal() {
-            document.getElementById('cart-items').innerHTML = cart.map((item, i) => `
-                <div class="bg-slate-950 p-3 rounded-xl flex justify-between items-center text-sm">
-                    <span>${item.qty}x ${item.product.name}</span>
-                    <span class="text-green-400 font-bold">R$ ${(item.product.price * item.qty).toFixed(2)}</span>
-                </div>
-            `).join('');
-            const sub = cart.reduce((a,b)=>a+(b.product.price*b.qty),0);
-            document.getElementById('checkout-total').innerText = (sub + (currentStore.deliveryFee||5)).toFixed(2);
-        }
-
-        window.sendOrder = async function() {
-            const name = document.getElementById('c-name').value, phone = document.getElementById('c-phone').value, address = document.getElementById('c-address').value;
-            if (!name || !phone) return alert('Preencha nome e WhatsApp!');
-            const sub = cart.reduce((a,b)=>a+(b.product.price*b.qty),0), total = sub + (currentStore.deliveryFee||5);
-            let text = `*NOVO PEDIDO - ${currentStore.name.toUpperCase()}*\nCliente: ${name}\nTel: ${phone}\nMorada: ${address}\n\nItens:\n` + cart.map(i=>`• ${i.qty}x ${i.product.name}`).join('\n') + `\n\nTotal: R$ ${total.toFixed(2)}`;
-            await addDoc(collection(db, "orders"), { orderId: Date.now(), storeId: currentStore.id, customer: name, total, status: 'Pendente', date: new Date().toISOString() });
-            window.open(`https://wa.me/${currentStore.phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
-            cart = []; closeCart(); updateCartUI();
-        }
-
-        window.openClientOrdersModal = function() {
-            const storeOrders = orders.filter(o => o.storeId === currentStore.id);
-            document.getElementById('client-orders-list').innerHTML = storeOrders.length === 0 ? '<p class="text-sm text-slate-500 text-center">Nenhum pedido.</p>' : storeOrders.reverse().map(o => `
-                <div class="bg-slate-950 p-3 rounded-xl flex justify-between items-center text-sm">
-                    <span>#${o.orderId.toString().slice(-4)} - ${o.customer}</span>
-                    <span class="text-amber-400 font-bold">${o.status}</span>
-                </div>
-            `).join('');
-            document.getElementById('client-orders-modal').style.display = 'flex';
-        }
-
-        // --- GESTÃO LOGIN ADMIN / LOJISTA ---
-        function checkAdminSession() {
-            if (isMasterLogged) {
-                document.getElementById('admin-login-box').style.display = 'none';
-                document.getElementById('panel-master').style.display = 'block';
-                renderMasterStores();
-            } else if (loggedStoreId) {
-                const s = stores.find(st => st.id === loggedStoreId);
-                if (s) {
-                    document.getElementById('admin-login-box').style.display = 'none';
-                    document.getElementById('panel-lojista').style.display = 'block';
-                    document.getElementById('admin-store-name').innerText = s.name;
-                    renderKanban();
-                }
-            }
-        }
-
-        window.executeGlobalLogin = function() {
-            const e = document.getElementById('global-email').value.trim(), p = document.getElementById('global-pass').value.trim();
-            if (e === MASTER_EMAIL && p === MASTER_PASS) {
+            if (email === MASTER_EMAIL && senha === MASTER_PASS) {
                 localStorage.setItem('saas_master_logged', 'true');
-                isMasterLogged = true;
-                checkAdminSession();
-                return;
+                mostrarPainelMaster();
+            } else {
+                alert('E-mail ou senha incorretos!');
             }
-            const store = stores.find(s => s.email === e && s.pass === p);
-            if (store) {
-                loggedStoreId = store.id;
-                localStorage.setItem('saas_logged_store', store.id);
-                checkAdminSession();
-            } else { alert('Dados incorretos!'); }
+        };
+
+        function mostrarPainelMaster() {
+            document.getElementById('box-login').style.display = 'none';
+            document.getElementById('box-master-panel').style.display = 'block';
+            renderizarListaLojasMaster();
         }
 
-        window.logoutAdmin = function() {
-            localStorage.removeItem('saas_logged_store');
+        window.logoutSistema = function() {
             localStorage.removeItem('saas_master_logged');
             window.location.reload();
-        }
+        };
 
-        function renderKanban() {
-            const storeOrders = orders.filter(o => o.storeId === loggedStoreId);
-            document.getElementById('admin-content-kanban').innerHTML = ['Pendente', 'Em Preparo', 'Concluído'].map(status => `
-                <div class="glass-card p-4 rounded-2xl">
-                    <h4 class="font-bold text-xs uppercase text-slate-400 mb-3">${status}</h4>
-                    <div class="space-y-3">${storeOrders.filter(o=>o.status===status).map(o=>`
-                        <div class="bg-slate-950 p-3 rounded-xl text-xs">
-                            <p class="font-bold">#${o.orderId.toString().slice(-4)} - ${o.customer}</p>
-                            <p class="text-green-400 font-bold mt-1">R$ ${o.total.toFixed(2)}</p>
-                            <select onchange="updateStatus('${o.docId}', this.value)" class="mt-2 w-full bg-slate-900 border border-slate-800 rounded p-1 text-white">
-                                ${['Pendente', 'Em Preparo', 'Concluído'].map(st=>`<option ${st===o.status?'selected':''}>${st}</option>`).join('')}
-                            </select>
-                        </div>`).join('')}</div>
+        window.criarLojaMaster = async function() {
+            const id = document.getElementById('m-id').value.trim().toLowerCase().replace(/\s+/g, '-');
+            const name = document.getElementById('m-name').value;
+            const email = document.getElementById('m-email').value;
+            const pass = document.getElementById('m-pass').value;
+            const phone = document.getElementById('m-phone').value;
+            const logo = document.getElementById('m-logo').value || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=200';
+
+            if (!id || !name || !email || !pass) {
+                alert('Preencha os campos obrigatórios!');
+                return;
+            }
+
+            const novaLoja = {
+                id, name, email, pass, phone, logo,
+                cover: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200',
+                status: 'active', hours: '18:00 - 23:30', deliveryFee: 5.00
+            };
+
+            await addDoc(collection(db, "stores"), novaLoja);
+            alert('Loja criada com sucesso!');
+            window.location.reload();
+        };
+
+        function renderizarListaLojasMaster() {
+            const container = document.getElementById('master-lista-lojas');
+            container.innerHTML = stores.length ? stores.map(s => `
+                <div class="bg-slate-950 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
+                    <div>
+                        <strong class="text-white text-sm">${s.name}</strong> 
+                        <span class="text-slate-400 block">Link do Cliente: <code class="text-amber-400">index.html?store=${s.id}</code></span>
+                    </div>
+                    <button onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname.replace('index.html','') + 'index.html?store=${s.id}'); alert('Link copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg transition">Copiar Link</button>
                 </div>
-            `).join('');
-        }
-        window.updateStatus = async function(docId, newStatus) { await updateDoc(doc(db, "orders", docId), { status: newStatus }); orders = orders.map(o=>o.docId===docId?{...o, status: newStatus}:o); renderKanban(); }
-
-        window.saveNewStore = async function() {
-            const id = document.getElementById('m-id').value.trim().toLowerCase();
-            const name = document.getElementById('m-name').value, email = document.getElementById('m-email').value, pass = document.getElementById('m-pass').value, phone = document.getElementById('m-phone').value;
-            if(!id || !name) return alert('Preencha ID e Nome');
-            const newStore = { id, name, email, pass, phone, logo: document.getElementById('m-logo').value||'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=200', cover: document.getElementById('m-cover').value||'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200', status: 'active', hours: '18:00 - 23:30', deliveryFee: 5 };
-            await addDoc(collection(db, "stores"), newStore);
-            alert('Loja criada!'); window.location.reload();
+            `).join('') : '<p class="text-slate-500 text-sm">Nenhuma loja registada.</p>';
         }
 
-        function renderMasterStores() {
-            document.getElementById('master-stores-list').innerHTML = stores.map(s => `
-                <div class="bg-slate-950 p-3 rounded-xl flex justify-between items-center text-xs">
-                    <span><b>${s.name}</b> (Link cliente: index.html?store=${s.id})</span>
-                    <button onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname.replace('index.html','') + 'index.html?store=${s.id}'); alert('Link copiado!');" class="bg-blue-600 px-3 py-1.5 rounded text-white font-bold">Copiar Link</button>
-                </div>
-            `).join('');
-        }
-
-        loadDatabase();
+        initAppMaster();
     </script>
 </body>
 </html>
