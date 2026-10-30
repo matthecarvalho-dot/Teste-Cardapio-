@@ -9,98 +9,178 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
-        .glass-header { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-28">
 
-    <header class="glass-header sticky top-0 z-50 px-5 py-4 flex justify-between items-center">
+    <!-- CABEÇALHO GERAL -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-5 py-4 flex justify-between items-center">
         <div class="font-extrabold text-sm text-white flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-store text-white text-xs"></i>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-red-600 flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-bolt text-white text-xs"></i>
             </div>
-            <span id="header-title" class="text-base">Plataforma SaaS</span>
+            <span id="header-title" class="text-base tracking-tight">SaaS Enterprise</span>
         </div>
         <div id="header-nav" class="flex items-center gap-5 text-xs font-bold text-slate-400"></div>
     </header>
 
-    <!-- ================= 1. VISÃO DO CLIENTE ================= -->
-    <div id="view-store" class="w-full hidden">
+    <!-- ================= 1. VISÃO DO CLIENTE FINAL (Cardápio) ================= -->
+    <div id="view-client" class="w-full hidden">
         <div id="store-banner" class="w-full h-56 md:h-72 bg-slate-800 bg-cover bg-center relative">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#020617] to-transparent"></div>
         </div>
         <div class="max-w-5xl mx-auto px-4 md:px-8 relative -mt-20">
             <div class="flex flex-col md:flex-row md:items-end gap-5 mb-8">
-                <img id="store-logo-img" src="" class="w-28 h-28 md:w-36 md:h-36 rounded-3xl border-4 border-[#020617] shadow-2xl object-cover bg-slate-900 shrink-0">
+                <img id="store-logo" src="" class="w-28 h-28 md:w-36 md:h-36 rounded-3xl border-4 border-[#020617] shadow-2xl object-cover bg-slate-900 shrink-0">
                 <div class="pb-2">
-                    <h1 id="store-title" class="text-3xl md:text-5xl font-extrabold text-white mb-2">Carregando...</h1>
-                    <span id="store-hours" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-bold text-amber-400"><i class="fa-solid fa-clock"></i> <span></span></span>
+                    <h1 id="store-name" class="text-3xl md:text-5xl font-extrabold text-white mb-2">Carregando...</h1>
+                    <span id="store-hours" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-bold text-amber-400"><i class="fa-solid fa-clock"></i> Aberto</span>
                 </div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5" id="products-container"></div>
-        </div>
-    </div>
-
-    <!-- ================= 2. TELA DE LOGIN / MASTER ================= -->
-    <div id="view-admin-area" class="max-w-4xl mx-auto px-4 py-16">
-        
-        <!-- Caixa de Login -->
-        <div id="box-login" class="max-w-md mx-auto text-center">
-            <div class="glass-card p-8 rounded-3xl shadow-2xl border border-slate-800">
-                <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20">
-                    <i class="fa-solid fa-user-shield"></i>
-                </div>
-                <h2 class="text-2xl font-black text-white mb-2">Área Administrativa</h2>
-                <p class="text-xs text-slate-400 mb-6">Insira os dados de Dono do Sistema.</p>
-                <div class="space-y-4 text-left">
-                    <input type="email" id="login-email" placeholder="E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
-                    <input type="password" id="login-senha" placeholder="Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
-                    <button onclick="fazerLoginGlobal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
-                        Entrar no Painel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Painel Master -->
-        <div id="box-master-panel" class="hidden space-y-6">
-            <div class="glass-card p-6 md:p-8 rounded-3xl flex justify-between items-center">
-                <div>
-                    <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-full uppercase">Painel Master Global</span>
-                    <h1 class="text-2xl font-extrabold text-white mt-2">Gestão do SaaS</h1>
-                </div>
-                <button onclick="logoutSistema()" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition">Sair</button>
             </div>
             
-            <!-- Criação de Loja -->
-            <div class="glass-card p-6 md:p-8 rounded-3xl space-y-4">
-                <h3 class="font-bold text-white text-lg">Criar Nova Loja</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="m-id" placeholder="ID (Final do Link. ex: pizzaria-maria)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
-                    <input type="text" id="m-name" placeholder="Nome do Estabelecimento" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
-                    <input type="email" id="m-email" placeholder="E-mail do Lojista" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
-                    <input type="text" id="m-pass" placeholder="Senha do Lojista" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
-                    <input type="text" id="m-phone" placeholder="WhatsApp (5511...)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
-                    <input type="text" id="m-logo" placeholder="Link Direto da Logo (URL)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+            <div class="flex gap-3 overflow-x-auto pb-4 mb-6 scrollbar-hide" id="categories-container"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="products-container"></div>
+        </div>
+    </div>
+
+    <!-- ================= 2. TELA DE LOGIN ================= -->
+    <div id="view-login" class="max-w-md mx-auto px-4 py-20 hidden text-center">
+        <div class="glass-card p-8 rounded-3xl shadow-2xl border border-slate-800">
+            <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20"><i class="fa-solid fa-user-shield"></i></div>
+            <h2 class="text-2xl font-black text-white mb-2">Acesso Restrito</h2>
+            <p class="text-xs text-slate-400 mb-6">Área exclusiva para Lojistas e Donos do Sistema.</p>
+            <div class="space-y-4 text-left">
+                <input type="email" id="login-email" placeholder="Seu E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                <input type="password" id="login-senha" placeholder="Sua Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                <button onclick="executeLogin()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Entrar no Painel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 3. PAINEL DO MASTER (Donos) ================= -->
+    <div id="view-master" class="max-w-6xl mx-auto px-4 py-8 hidden space-y-8">
+        <div class="glass-card p-6 md:p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-full uppercase">Master Admin</span>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-white mt-2">Gestão Global SaaS</h1>
+            </div>
+            <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-5 py-3 rounded-xl text-sm font-bold transition">Sair do Sistema</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Criar Loja -->
+            <div class="glass-card p-6 rounded-3xl h-fit">
+                <h3 class="font-bold text-white text-lg mb-4"><i class="fa-solid fa-plus text-amber-500 mr-2"></i>Nova Loja</h3>
+                <div class="space-y-3">
+                    <input type="text" id="m-id" placeholder="URL da Loja (ex: pizzaria-maria)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-name" placeholder="Nome Completo" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="email" id="m-email" placeholder="E-mail (Login)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-pass" placeholder="Senha Provisória" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-phone" placeholder="WhatsApp (5511...)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-logo" placeholder="Link da Logo (URL)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <button onclick="createStore()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2">Criar Loja</button>
                 </div>
-                <button onclick="criarLojaMaster()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Salvar e Criar Loja</button>
             </div>
 
-            <!-- Lista de Lojas com Link Limpo -->
-            <div class="glass-card p-6 md:p-8 rounded-3xl">
-                <h3 class="font-bold text-white text-lg mb-2">Acesso Direto aos Sites</h3>
-                <p class="text-xs text-slate-400 mb-6">Links otimizados e limpos prontos para enviar aos clientes.</p>
-                <div id="master-lista-lojas" class="space-y-3"></div>
+            <!-- Lista de Lojas -->
+            <div class="lg:col-span-2 glass-card p-6 rounded-3xl">
+                <h3 class="font-bold text-white text-lg mb-4">Lojas Registadas</h3>
+                <div id="master-stores-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 4. PAINEL DO LOJISTA (E Master gerindo loja) ================= -->
+    <div id="view-store-admin" class="max-w-6xl mx-auto px-4 py-8 hidden space-y-6">
+        
+        <div class="glass-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="bg-amber-500/10 text-amber-500 text-xs font-black px-3 py-1.5 rounded-full uppercase" id="admin-badge">Painel do Lojista</span>
+                <h1 class="text-2xl font-extrabold text-white mt-2" id="admin-panel-store-name">Nome da Loja</h1>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-voltar-master" onclick="voltarParaMaster()" class="hidden bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl text-sm font-bold transition"><i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Master</button>
+                <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-4 py-3 rounded-xl text-sm font-bold transition">Sair</button>
+            </div>
+        </div>
+
+        <!-- Abas Navegação -->
+        <div class="flex gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-800 overflow-x-auto scrollbar-hide">
+            <button onclick="switchAdminTab('kanban')" id="tab-kanban" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold bg-amber-600 text-white shadow-lg whitespace-nowrap"><i class="fa-solid fa-list-check mr-2"></i>Pedidos em Tempo Real</button>
+            <button onclick="switchAdminTab('catalog')" id="tab-catalog" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 whitespace-nowrap"><i class="fa-solid fa-utensils mr-2"></i>Gerir Cardápio</button>
+            <button onclick="switchAdminTab('settings')" id="tab-settings" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 whitespace-nowrap"><i class="fa-solid fa-gear mr-2"></i>Configurações e Senha</button>
+        </div>
+
+        <!-- Conteúdo Kanban (Pedidos) -->
+        <div id="content-kanban" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+        <!-- Conteúdo Cardápio -->
+        <div id="content-catalog" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-card p-6 rounded-3xl h-fit">
+                <h3 class="font-bold text-white mb-4"><i class="fa-solid fa-plus text-amber-500 mr-2"></i>Adicionar Prato</h3>
+                <div class="space-y-3">
+                    <input type="text" id="p-name" placeholder="Nome do Prato" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="p-cat" placeholder="Categoria (ex: Pizzas)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="number" step="0.01" id="p-price" placeholder="Preço (R$)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="p-img" placeholder="Link da Foto (URL)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <textarea id="p-desc" placeholder="Descrição dos ingredientes..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none" rows="2"></textarea>
+                    <button onclick="addMenuProduct()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2">Guardar no Cardápio</button>
+                </div>
+            </div>
+            <div class="lg:col-span-2 glass-card p-6 rounded-3xl">
+                <h3 class="font-bold text-white mb-4">Itens do Cardápio Atual</h3>
+                <div id="admin-products-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Configurações (Mudar Senha) -->
+        <div id="content-settings" class="hidden glass-card p-6 md:p-8 rounded-3xl max-w-lg">
+            <h3 class="font-bold text-white text-lg mb-2">Segurança e Acesso</h3>
+            <p class="text-xs text-slate-400 mb-6">Altere a senha de acesso ao painel desta loja.</p>
+            <div class="space-y-4">
+                <input type="password" id="new-password" placeholder="Digite a nova senha..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                <button onclick="changeStorePassword()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Atualizar Senha</button>
             </div>
         </div>
 
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- MODAL DO PRODUTO (CLIENTE) -->
+    <div id="modal-product" class="fixed inset-0 bg-[#020617]/90 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative">
+            <button onclick="closeProduct()" class="absolute top-4 right-4 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center z-10"><i class="fa-solid fa-xmark"></i></button>
+            <img id="m-prod-img" src="" class="w-full h-56 object-cover">
+            <div class="p-6">
+                <h2 id="m-prod-title" class="text-2xl font-black mb-2 text-white"></h2>
+                <p id="m-prod-desc" class="text-sm text-slate-400 mb-6"></p>
+                <div class="flex gap-4">
+                    <div class="flex items-center justify-between w-32 bg-slate-950 p-2 rounded-2xl border border-slate-800">
+                        <button onclick="qtd(-1)" class="w-10 h-10 text-slate-400"><i class="fa-solid fa-minus"></i></button>
+                        <span id="m-prod-qty" class="font-bold text-white text-lg">1</span>
+                        <button onclick="qtd(1)" class="w-10 h-10 text-amber-500"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <button onclick="addToCart()" class="flex-1 bg-amber-600 text-white rounded-2xl font-bold text-lg shadow-lg">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SACOLA FLUTUANTE (CLIENTE) -->
+    <div id="cart-floater" class="fixed bottom-6 left-0 right-0 px-4 z-40 hidden pointer-events-none">
+        <div class="max-w-md mx-auto pointer-events-auto">
+            <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl flex justify-between items-center font-bold shadow-2xl transition">
+                <div class="flex items-center gap-3"><div class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-xs" id="cart-count">0</div><span>Fazer Pedido via WhatsApp</span></div>
+                <span class="text-lg">R$ <span id="cart-total">0.00</span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs e Lógica -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAWzFIaSbT-au2oz7_bEgxGsABi5TjDrig",
@@ -113,136 +193,158 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // CONFIGURAÇÃO DOS DOIS DONOS DO SISTEMA
+        // CONTAS MASTER (DONOS DO SISTEMA)
         const MASTER_ACCOUNTS = [
             { email: "matthecarvalho@gmail.com", pass: "Onerepublic" },
             { email: "lidyteste1@gmail.com", pass: "239818" }
         ];
 
-        let stores = [], products = [];
+        let stores = [], products = [], orders = [];
+        let currentRole = null; // 'master', 'lojista', ou 'client'
+        let managedStoreId = null; // ID da loja sendo gerida no painel
+        let activeProduct = null, cart = [], activeQty = 1, activeCategory = '';
+
         const urlParams = new URLSearchParams(window.location.search);
-        const storeId = urlParams.get('store');
+        const storeIdParam = urlParams.get('store');
 
-        window.initAppMaster = async function() {
-            try {
-                const sSnap = await getDocs(collection(db, "stores"));
-                stores = sSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        // INICIALIZAÇÃO
+        window.onload = async () => {
+            await loadData();
+            
+            // 1. Roteamento: É cliente acessando uma loja?
+            if (storeIdParam) {
+                currentRole = 'client';
+                const store = stores.find(s => s.id === storeIdParam);
+                if (store) renderClientStore(store);
+                else document.body.innerHTML = `<h1 class="text-white text-center mt-20">Loja não encontrada.</h1>`;
+                return;
+            }
 
-                const pSnap = await getDocs(collection(db, "products"));
-                products = pSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+            // 2. Roteamento: Tem sessão salva?
+            const savedRole = localStorage.getItem('saas_role');
+            const savedStoreId = localStorage.getItem('saas_store');
 
-                // SE FOR ACESSO DO CLIENTE FINAL (Tem ?store=)
-                if (storeId) {
-                    const store = stores.find(s => s.id === storeId);
-                    if (!store) {
-                        document.body.innerHTML = `<div class="min-h-screen flex items-center justify-center text-white text-lg">Loja não encontrada.</div>`;
-                        return;
-                    }
-                    document.getElementById('view-store').style.display = 'block';
-                    document.getElementById('view-admin-area').style.display = 'none';
-                    document.getElementById('header-title').innerText = store.name;
-                    document.getElementById('store-title').innerText = store.name;
-                    document.getElementById('store-logo-img').src = store.logo;
-                    document.getElementById('store-banner').style.backgroundImage = `url('${store.cover}')`;
-                    
-                    const storeProds = products.filter(p => p.storeId === store.id);
-                    document.getElementById('products-container').innerHTML = storeProds.length ? storeProds.map(p => `
-                        <div class="glass-card rounded-2xl p-4 flex gap-4">
-                            <div class="flex-1">
-                                <h3 class="font-bold text-white mb-1">${p.name}</h3>
-                                <p class="text-xs text-slate-400 mb-2">${p.desc}</p>
-                                <span class="font-black text-green-400">R$ ${p.price.toFixed(2)}</span>
-                            </div>
-                            <img src="${p.img}" class="w-24 h-24 rounded-xl object-cover">
-                        </div>
-                    `).join('') : '<p class="text-slate-400">Nenhum produto cadastrado.</p>';
-                    return;
-                }
-
-                // VERIFICA SE JÁ ESTÁ LOGADO NO PAINEL ADMIN
-                if (localStorage.getItem('saas_master_logged') === 'true') {
-                    mostrarPainelMaster();
-                }
-            } catch (e) { console.error(e); }
-        };
-
-        window.fazerLoginGlobal = function() {
-            const email = document.getElementById('login-email').value.trim();
-            const senha = document.getElementById('login-senha').value.trim();
-
-            // Verifica se as credenciais batem com alguma das contas Master
-            const isValidMaster = MASTER_ACCOUNTS.some(acc => acc.email === email && acc.pass === senha);
-
-            if (isValidMaster) {
-                localStorage.setItem('saas_master_logged', 'true');
-                mostrarPainelMaster();
+            if (savedRole === 'master') {
+                currentRole = 'master';
+                showView('view-master');
+                renderMasterStores();
+            } else if (savedRole === 'lojista' && savedStoreId) {
+                currentRole = 'lojista';
+                managedStoreId = savedStoreId;
+                showView('view-store-admin');
+                initStoreAdminPanel();
             } else {
-                alert('E-mail ou senha incorretos!');
+                showView('view-login');
             }
         };
 
-        function mostrarPainelMaster() {
-            document.getElementById('box-login').style.display = 'none';
-            document.getElementById('box-master-panel').style.display = 'block';
-            renderizarListaLojasMaster();
+        async function loadData() {
+            try {
+                stores = (await getDocs(collection(db, "stores"))).docs.map(d => ({ docId: d.id, ...d.data() }));
+                products = (await getDocs(collection(db, "products"))).docs.map(d => ({ docId: d.id, ...d.data() }));
+                orders = (await getDocs(collection(db, "orders"))).docs.map(d => ({ docId: d.id, ...d.data() }));
+            } catch (e) { console.error("Erro ao carregar DB:", e); }
         }
 
-        window.logoutSistema = function() {
-            localStorage.removeItem('saas_master_logged');
+        function showView(viewId) {
+            ['view-client', 'view-login', 'view-master', 'view-store-admin'].forEach(id => {
+                document.getElementById(id).style.display = id === viewId ? 'block' : 'none';
+            });
+        }
+
+        // ================= SISTEMA DE LOGIN =================
+        window.executeLogin = () => {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-senha').value.trim();
+
+            if (MASTER_ACCOUNTS.some(acc => acc.email === email && acc.pass === pass)) {
+                localStorage.setItem('saas_role', 'master');
+                window.location.reload();
+                return;
+            }
+
+            const store = stores.find(s => s.email === email && s.pass === pass);
+            if (store) {
+                localStorage.setItem('saas_role', 'lojista');
+                localStorage.setItem('saas_store', store.id);
+                window.location.reload();
+            } else {
+                alert('Credenciais incorretas!');
+            }
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('saas_role');
+            localStorage.removeItem('saas_store');
             window.location.reload();
         };
 
-        window.criarLojaMaster = async function() {
+        // ================= PAINEL MASTER =================
+        window.createStore = async () => {
             const id = document.getElementById('m-id').value.trim().toLowerCase().replace(/\s+/g, '-');
             const name = document.getElementById('m-name').value;
             const email = document.getElementById('m-email').value;
             const pass = document.getElementById('m-pass').value;
-            const phone = document.getElementById('m-phone').value;
-            const logo = document.getElementById('m-logo').value || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=200';
+            if(!id || !name || !email || !pass) return alert('Preencha os campos essenciais!');
 
-            if (!id || !name || !email || !pass) {
-                alert('Preencha os campos obrigatórios!');
-                return;
-            }
-
-            const novaLoja = {
-                id, name, email, pass, phone, logo,
-                cover: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200',
-                status: 'active', hours: '18:00 - 23:30', deliveryFee: 5.00
-            };
-
-            await addDoc(collection(db, "stores"), novaLoja);
-            alert('Loja criada com sucesso!');
-            window.location.reload();
+            const nova = { id, name, email, pass, phone: document.getElementById('m-phone').value, logo: document.getElementById('m-logo').value || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=200', cover: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200' };
+            await addDoc(collection(db, "stores"), nova);
+            alert('Loja criada!'); window.location.reload();
         };
 
-        function renderizarListaLojasMaster() {
-            const container = document.getElementById('master-lista-lojas');
-            container.innerHTML = stores.length ? stores.map(s => {
-                // Remove o "index.html" para gerar o link curto e limpo
-                const basePath = window.location.pathname.replace('index.html', '');
-                const urlLojaLimpa = window.location.origin + basePath + `?store=${s.id}`;
-                
+        function renderMasterStores() {
+            const container = document.getElementById('master-stores-list');
+            const basePath = window.location.pathname.replace('index.html', '');
+            container.innerHTML = stores.map(s => {
+                const url = window.location.origin + basePath + `?store=${s.id}`;
                 return `
-                    <div class="bg-slate-950 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
+                <div class="bg-slate-950 p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 border border-slate-800">
+                    <div class="flex items-center gap-4">
+                        <img src="${s.logo}" class="w-12 h-12 rounded-xl object-cover">
                         <div>
-                            <strong class="text-white text-sm">${s.name}</strong> 
-                            <span class="text-slate-400 block mt-1">Link: <code class="text-amber-400">${urlLojaLimpa}</code></span>
-                        </div>
-                        <div class="flex gap-2">
-                            <a href="${urlLojaLimpa}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Site
-                            </a>
-                            <button onclick="navigator.clipboard.writeText('${urlLojaLimpa}'); alert('Link copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-lg transition">
-                                <i class="fa-solid fa-copy"></i> Copiar Link
-                            </button>
+                            <strong class="text-white text-base">${s.name}</strong>
+                            <p class="text-slate-500 text-xs mt-1">ID: ${s.id} | Login: ${s.email}</p>
                         </div>
                     </div>
-                `;
-            }).join('') : '<p class="text-slate-500 text-sm">Nenhuma loja registada.</p>';
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="gerenciarLojaComoMaster('${s.id}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2.5 rounded-xl transition text-xs"><i class="fa-solid fa-wrench mr-2"></i>Gerenciar</button>
+                        <button onclick="navigator.clipboard.writeText('${url}'); alert('Copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl transition text-xs"><i class="fa-solid fa-copy mr-2"></i>Copiar Link</button>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        initAppMaster();
-    </script>
-</body>
-</html>
+        // ================= MASTER GERINDO LOJISTA =================
+        window.gerenciarLojaComoMaster = (storeId) => {
+            managedStoreId = storeId;
+            showView('view-store-admin');
+            document.getElementById('btn-voltar-master').style.display = 'block';
+            document.getElementById('admin-badge').innerText = "Modo Master / Suporte";
+            initStoreAdminPanel();
+        };
+
+        window.voltarParaMaster = () => {
+            managedStoreId = null;
+            showView('view-master');
+        };
+
+        // ================= PAINEL DO LOJISTA (Compartilhado com Master) =================
+        function initStoreAdminPanel() {
+            const store = stores.find(s => s.id === managedStoreId);
+            document.getElementById('admin-panel-store-name').innerText = store.name;
+            switchAdminTab('kanban');
+            
+            // Atualização a cada 10s para ver novos pedidos
+            setInterval(async () => {
+                orders = (await getDocs(collection(db, "orders"))).docs.map(d => ({ docId: d.id, ...d.data() }));
+                if(document.getElementById('content-kanban').style.display !== 'none') renderKanban();
+            }, 10000);
+        }
+
+        window.switchAdminTab = (tab) => {
+            ['kanban', 'catalog', 'settings'].forEach(t => {
+                document.getElementById(`content-${t}`).style.display = t === tab ? (t==='catalog'?'grid':'block') : 'none';
+                const btn = document.getElementById(`tab-${t}`);
+                if(t === tab) { btn.classList.add('bg-amber-600','text-white'); btn.classList.remove('bg-transparent','text-slate-400'); }
+                else { btn.classList.remove('bg-amber-600','text-white'); btn.classList.add('bg-transparent','text-slate-400'); }
+            });
