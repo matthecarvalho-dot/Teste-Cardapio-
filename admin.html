@@ -9,96 +9,87 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-header { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
-<body class="pb-28">
+<body class="bg-[#020617] text-white min-h-screen flex flex-col justify-between">
 
-    <header class="glass-header sticky top-0 z-50 px-5 py-4 flex justify-between items-center">
-        <div class="font-extrabold text-sm text-white flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-blue-600 flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-shield-halved text-white text-xs"></i>
+    <!-- CABEÇALHO -->
+    <header class="bg-slate-900/80 border-b border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="font-extrabold text-sm flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-slate-950">
+                <i class="fa-solid fa-store"></i>
             </div>
-            <span>Painel Administrativo SaaS</span>
+            <span>Painel SaaS</span>
         </div>
-        <div>
-            <button onclick="document.getElementById('login-modal').style.display='flex'" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg">
-                <i class="fa-solid fa-right-to-bracket mr-1"></i> Fazer Login
-            </button>
-        </div>
+        <button onclick="abrirModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg">
+            <i class="fa-solid fa-right-to-bracket mr-1"></i> Fazer Login
+        </button>
     </header>
 
-    <div class="max-w-md mx-auto px-4 py-20 text-center">
-        <div class="glass-card p-8 rounded-3xl shadow-2xl border border-slate-800">
-            <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20"><i class="fa-solid fa-store"></i></div>
-            <h2 class="text-2xl font-black text-white mb-2">Painel de Gestão</h2>
-            <p class="text-xs text-slate-400 mb-6">Clique no botão abaixo para entrar com as suas credenciais.</p>
-            <button onclick="document.getElementById('login-modal').style.display='flex'" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-md mx-auto px-4 py-16 text-center flex-1 flex flex-col justify-center">
+        <div class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl shadow-2xl">
+            <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h1 class="text-2xl font-black mb-2">Acesso ao Sistema</h1>
+            <p class="text-xs text-slate-400 mb-6">Clique no botão abaixo para abrir a janela de autenticação do lojista ou master.</p>
+            <button onclick="abrirModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
                 Entrar no Sistema
             </button>
         </div>
-    </div>
+    </main>
 
     <!-- MODAL DE LOGIN -->
-    <div id="login-modal" class="fixed inset-0 bg-[#020617]/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-        <div class="glass-card rounded-3xl p-8 max-w-sm w-full shadow-2xl relative border border-slate-700/50">
-            <button onclick="document.getElementById('login-modal').style.display='none'" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="modal-login" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
+            <button onclick="fecharModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-user-lock"></i></div>
-                <h2 class="text-2xl font-black text-white">Autenticação</h2>
+                <div class="w-14 h-14 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl border border-blue-500/20">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <h2 class="text-xl font-black">Autenticação</h2>
             </div>
             <div class="space-y-4">
-                <input type="email" id="global-email" placeholder="O seu E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                <input type="password" id="global-pass" placeholder="A sua Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg">Acessar Painel</button>
+                <input type="email" id="input-email" placeholder="O seu E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-blue-500">
+                <input type="password" id="input-senha" placeholder="A sua Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-blue-500">
+                <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
+                    Entrar Agora
+                </button>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAWzFIaSbT-au2oz7_bEgxGsABi5TjDrig",
-            authDomain: "cardapio-5fd4a.firebaseapp.com",
-            projectId: "cardapio-5fd4a",
-            storageBucket: "cardapio-5fd4a.firebasestorage.app",
-            messagingSenderId: "774670757984",
-            appId: "1:774670757984:web:fc395973740044ab079305"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    <!-- SCRIPT DE CONTROLO -->
+    <script>
+        function abrirModal() {
+            document.getElementById('modal-login').style.display = 'flex';
+        }
+        function fecharModal() {
+            document.getElementById('modal-login').style.display = 'none';
+        }
 
         const MASTER_EMAIL = "matthecarvalho@gmail.com";
         const MASTER_PASS = "Onerepublic";
 
-        window.fazerLogin = async function() {
-            const email = document.getElementById('global-email').value.trim();
-            const pass = document.getElementById('global-pass').value.trim();
+        function fazerLogin() {
+            const email = document.getElementById('input-email').value.trim();
+            const senha = document.getElementById('input-senha').value.trim();
 
-            if (email === MASTER_EMAIL && pass === MASTER_PASS) {
+            if (email === MASTER_EMAIL && senha === MASTER_PASS) {
                 alert('Login Master efetuado com sucesso!');
-                document.getElementById('login-modal').style.display = 'none';
+                fecharModal();
                 return;
             }
 
-            try {
-                const storesSnap = await getDocs(collection(db, "stores"));
-                const stores = storesSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
-                const store = stores.find(s => s.email === email && s.pass === pass);
-                
-                if (store) {
-                    alert(`Bem-vindo lojista: ${store.name}`);
-                    document.getElementById('login-modal').style.display = 'none';
-                } else {
-                    alert('E-mail ou senha incorretos!');
-                }
-            } catch (err) {
-                alert('Erro ao conectar à base de dados.');
-                console.error(err);
+            if (email === "" || senha === "") {
+                alert('Preencha o e-mail e a senha!');
+                return;
             }
+
+            alert('Credenciais enviadas. (Para testes, utilize o e-mail Master configurado).');
         }
     </script>
 </body>
