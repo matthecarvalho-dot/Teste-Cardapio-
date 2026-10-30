@@ -22,12 +22,10 @@
             </div>
             <span id="header-title" class="text-base">Plataforma SaaS</span>
         </div>
-        <div id="header-nav" class="flex items-center gap-5 text-xs font-bold text-slate-400">
-            <!-- Dinâmico -->
-        </div>
+        <div id="header-nav" class="flex items-center gap-5 text-xs font-bold text-slate-400"></div>
     </header>
 
-    <!-- 1. VISÃO DO CLIENTE (Aparece se houver ?store= na URL) -->
+    <!-- ================= 1. VISÃO DO CLIENTE ================= -->
     <div id="view-store" class="w-full hidden">
         <div id="store-banner" class="w-full h-56 md:h-72 bg-slate-800 bg-cover bg-center relative">
             <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/60 to-transparent"></div>
@@ -44,7 +42,7 @@
         </div>
     </div>
 
-    <!-- 2. TELA DE LOGIN / GESTÃO (Aparece se o link NÃO tiver ?store=) -->
+    <!-- ================= 2. TELA DE LOGIN / MASTER ================= -->
     <div id="view-admin-area" class="max-w-4xl mx-auto px-4 py-16">
         
         <!-- Caixa de Login -->
@@ -54,7 +52,7 @@
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
                 <h2 class="text-2xl font-black text-white mb-2">Área Administrativa</h2>
-                <p class="text-xs text-slate-400 mb-6">Insira os seus dados de Dono do Sistema.</p>
+                <p class="text-xs text-slate-400 mb-6">Insira os dados de Dono do Sistema.</p>
                 <div class="space-y-4 text-left">
                     <input type="email" id="login-email" placeholder="E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
                     <input type="password" id="login-senha" placeholder="Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
@@ -65,21 +63,21 @@
             </div>
         </div>
 
-        <!-- Painel Master (Dono do Sistema) -->
+        <!-- Painel Master -->
         <div id="box-master-panel" class="hidden space-y-6">
             <div class="glass-card p-6 md:p-8 rounded-3xl flex justify-between items-center">
                 <div>
-                    <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-full uppercase">Painel do Dono (Master)</span>
-                    <h1 class="text-2xl font-extrabold text-white mt-2">Gestão Global do SaaS</h1>
+                    <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-full uppercase">Painel Master Global</span>
+                    <h1 class="text-2xl font-extrabold text-white mt-2">Gestão do SaaS</h1>
                 </div>
                 <button onclick="logoutSistema()" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition">Sair</button>
             </div>
             
-            <!-- Criar Loja -->
+            <!-- Criação de Loja -->
             <div class="glass-card p-6 md:p-8 rounded-3xl space-y-4">
-                <h3 class="font-bold text-white text-lg">Criar Nova Loja / Cliente</h3>
+                <h3 class="font-bold text-white text-lg">Criar Nova Loja</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="m-id" placeholder="ID da Loja (ex: pizzaria-milan)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-id" placeholder="ID (Final do Link. ex: pizzaria-maria)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="text" id="m-name" placeholder="Nome do Estabelecimento" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="email" id="m-email" placeholder="E-mail do Lojista" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="text" id="m-pass" placeholder="Senha do Lojista" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
@@ -89,10 +87,10 @@
                 <button onclick="criarLojaMaster()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Salvar e Criar Loja</button>
             </div>
 
-            <!-- Lista de Lojas com Acesso Direto para Você -->
+            <!-- Lista de Lojas com Link Limpo -->
             <div class="glass-card p-6 md:p-8 rounded-3xl">
-                <h3 class="font-bold text-white text-lg mb-2">Acesso Direto aos Sites das Lojas</h3>
-                <p class="text-xs text-slate-400 mb-6">Aqui tem o acesso instantâneo para abrir ou copiar o link de qualquer loja criada.</p>
+                <h3 class="font-bold text-white text-lg mb-2">Acesso Direto aos Sites</h3>
+                <p class="text-xs text-slate-400 mb-6">Links otimizados e limpos prontos para enviar aos clientes.</p>
                 <div id="master-lista-lojas" class="space-y-3"></div>
             </div>
         </div>
@@ -115,8 +113,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const MASTER_EMAIL = "matthecarvalho@gmail.com";
-        const MASTER_PASS = "Onerepublic";
+        // CONFIGURAÇÃO DOS DOIS DONOS DO SISTEMA
+        const MASTER_ACCOUNTS = [
+            { email: "matthecarvalho@gmail.com", pass: "Onerepublic" },
+            { email: "lidyteste1@gmail.com", pass: "239818" }
+        ];
 
         let stores = [], products = [];
         const urlParams = new URLSearchParams(window.location.search);
@@ -130,6 +131,7 @@
                 const pSnap = await getDocs(collection(db, "products"));
                 products = pSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
 
+                // SE FOR ACESSO DO CLIENTE FINAL (Tem ?store=)
                 if (storeId) {
                     const store = stores.find(s => s.id === storeId);
                     if (!store) {
@@ -157,20 +159,21 @@
                     return;
                 }
 
+                // VERIFICA SE JÁ ESTÁ LOGADO NO PAINEL ADMIN
                 if (localStorage.getItem('saas_master_logged') === 'true') {
                     mostrarPainelMaster();
                 }
-
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         };
 
         window.fazerLoginGlobal = function() {
             const email = document.getElementById('login-email').value.trim();
             const senha = document.getElementById('login-senha').value.trim();
 
-            if (email === MASTER_EMAIL && senha === MASTER_PASS) {
+            // Verifica se as credenciais batem com alguma das contas Master
+            const isValidMaster = MASTER_ACCOUNTS.some(acc => acc.email === email && acc.pass === senha);
+
+            if (isValidMaster) {
                 localStorage.setItem('saas_master_logged', 'true');
                 mostrarPainelMaster();
             } else {
@@ -216,18 +219,21 @@
         function renderizarListaLojasMaster() {
             const container = document.getElementById('master-lista-lojas');
             container.innerHTML = stores.length ? stores.map(s => {
-                const urlLoja = window.location.origin + window.location.pathname.replace('index.html','') + `index.html?store=${s.id}`;
+                // Remove o "index.html" para gerar o link curto e limpo
+                const basePath = window.location.pathname.replace('index.html', '');
+                const urlLojaLimpa = window.location.origin + basePath + `?store=${s.id}`;
+                
                 return `
                     <div class="bg-slate-950 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
                         <div>
                             <strong class="text-white text-sm">${s.name}</strong> 
-                            <span class="text-slate-400 block">ID: ${s.id}</span>
+                            <span class="text-slate-400 block mt-1">Link: <code class="text-amber-400">${urlLojaLimpa}</code></span>
                         </div>
                         <div class="flex gap-2">
-                            <a href="${urlLoja}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+                            <a href="${urlLojaLimpa}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Site
                             </a>
-                            <button onclick="navigator.clipboard.writeText('${urlLoja}'); alert('Link copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-lg transition">
+                            <button onclick="navigator.clipboard.writeText('${urlLojaLimpa}'); alert('Link copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-lg transition">
                                 <i class="fa-solid fa-copy"></i> Copiar Link
                             </button>
                         </div>
