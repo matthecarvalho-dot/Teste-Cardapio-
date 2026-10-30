@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo & Master SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        .glass-header { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="pb-28">
+
+    <header class="glass-header sticky top-0 z-50 px-5 py-4 flex justify-between items-center">
+        <div class="font-extrabold text-sm text-white flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-blue-600 flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-shield-halved text-white text-xs"></i>
+            </div>
+            <span>Painel Administrativo SaaS</span>
+        </div>
+        <div id="auth-header-btn">
+            <button onclick="openLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition">Fazer Login</button>
+        </div>
+    </header>
+
+    <!-- TELA DE LOGIN INICIAL -->
+    <div id="view-login-screen" class="max-w-md mx-auto px-4 py-20 text-center">
+        <div class="glass-card p-8 rounded-3xl shadow-2xl border border-slate-800">
+            <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-lock"></i></div>
+            <h2 class="text-2xl font-black text-white mb-2">Acesso Restrito</h2>
+            <p class="text-xs text-slate-400 mb-6">Entre com as suas credenciais de Lojista ou Master Admin.</p>
+            <div class="space-y-4 text-left">
+                <input type="email" id="global-email" placeholder="E-mail de Acesso" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="password" id="global-pass" placeholder="Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <button onclick="executeGlobalLogin()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Acessar Painel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL DO LOJISTA -->
+    <div id="view-admin_empresario" class="max-w-7xl mx-auto px-4 py-8 hidden">
+        <div class="glass-card p-6 md:p-8 rounded-3xl mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div>
+                <span class="bg-amber-500/10 text-amber-500 text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-widest">Workspace Lojista</span>
+                <h1 class="text-3xl font-extrabold text-white mt-3 mb-1" id="admin-store-name">Minha Loja</h1>
+                <p class="text-slate-400 text-sm">Gestão de pedidos em tempo real com alerta sonoro.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="setAdminTab('kanban')" id="tab-btn-kanban" class="px-5 py-3 rounded-xl text-sm font-bold bg-amber-600 text-white shadow-lg">Pedidos</button>
+                <button onclick="setAdminTab('metrics')" id="tab-btn-metrics" class="px-5 py-3 rounded-xl text-sm font-bold bg-slate-800 text-slate-300">Métricas</button>
+                <button onclick="setAdminTab('catalog')" id="tab-btn-catalog" class="px-5 py-3 rounded-xl text-sm font-bold bg-slate-800 text-slate-300">Cardápio</button>
+                <button onclick="logoutAdmin()" class="px-5 py-3 rounded-xl text-sm font-bold bg-red-500/10 text-red-400">Sair</button>
+            </div>
+        </div>
+
+        <div id="admin-content-kanban" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        <div id="admin-content-metrics" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-8 rounded-3xl"><p class="text-xs text-slate-400 uppercase font-black mb-2">Faturamento</p><h3 class="text-4xl font-black text-green-400" id="metric-revenue">R$ 0,00</h3></div>
+            <div class="glass-card p-8 rounded-3xl"><p class="text-xs text-slate-400 uppercase font-black mb-2">Total Pedidos</p><h3 class="text-4xl font-black text-white" id="metric-orders">0</h3></div>
+            <div class="glass-card p-8 rounded-3xl"><p class="text-xs text-slate-400 uppercase font-black mb-2">Ticket Médio</p><h3 class="text-4xl font-black text-amber-400" id="metric-ticket">R$ 0,00</h3></div>
+        </div>
+        <div id="admin-content-catalog" class="hidden space-y-8">
+            <div class="glass-card p-6 md:p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-white mb-6">Cadastrar Produto</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="text" id="p-name" placeholder="Nome" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                    <select id="p-cat" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                        <option value="Pizzas">Pizzas</option><option value="Hambúrgueres">Hambúrgueres</option><option value="Bebidas">Bebidas</option><option value="Sobremesas">Sobremesas</option><option value="📅 Encomendas Agendadas">📅 Encomendas Agendadas</option>
+                    </select>
+                    <input type="number" step="0.01" id="p-price" placeholder="Preço" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                    <input type="text" id="p-img" placeholder="Link da Imagem (URL)" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                    <textarea id="p-desc" placeholder="Descrição..." class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none" rows="3"></textarea>
+                    <button onclick="addNewProductFirebase()" class="md:col-span-2 bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg">Salvar Produto</button>
+                </div>
+            </div>
+            <div class="glass-card p-6 md:p-8 rounded-3xl"><h3 class="text-xl font-bold text-white mb-6">Cardápio Atual</h3><div id="admin-products-list" class="space-y-4"></div></div>
+        </div>
+    </div>
+
+    <!-- PAINEL MASTER SaaS -->
+    <div id="view-admin_master" class="max-w-7xl mx-auto px-4 py-8 hidden">
+        <div class="glass-card p-6 md:p-8 rounded-3xl mb-8 flex justify-between items-center">
+            <div>
+                <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-full uppercase">Master Admin</span>
+                <h1 class="text-3xl font-extrabold text-white mt-3">Painel Global & Assinaturas</h1>
+            </div>
+            <button onclick="logoutAdmin()" class="px-5 py-3 rounded-xl text-sm font-bold bg-red-500/10 text-red-400">Sair</button>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="glass-card p-6 md:p-8 rounded-3xl h-fit space-y-5">
+                <h3 class="font-bold text-white text-xl mb-4" id="form-title-action">Novo Cliente</h3>
+                <input type="hidden" id="m-doc-id" value="">
+                <input type="text" id="m-id" placeholder="ID (ex: pizzaria-milan)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="text" id="m-name" placeholder="Nome da Loja" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="email" id="m-email" placeholder="E-mail Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="text" id="m-pass" placeholder="Senha Lojista" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="text" id="m-phone" placeholder="WhatsApp (5511999999999)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="text" id="m-logo-val" placeholder="Link da Logo" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="text" id="m-cover-val" placeholder="Link da Capa" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
+                <select id="m-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none"><option value="active">Ativo (Normal)</option><option value="suspended">Suspenso</option></select>
+                <div class="flex gap-3">
+                    <button onclick="saveNewStoreFirebase()" id="btn-save-store" class="flex-1 bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg">Salvar</button>
+                    <button onclick="resetStoreForm()" id="btn-cancel-store" class="hidden bg-slate-800 text-slate-300 px-5 py-4 rounded-xl font-bold">Cancelar</button>
+                </div>
+            </div>
+            <div class="lg:col-span-2 glass-card p-6 md:p-8 rounded-3xl"><h3 class="font-bold text-white text-xl mb-6">Lojas Registradas</h3><div id="master-stores-list" class="space-y-4"></div></div>
+        </div>
+    </div>
+
+    <audio id="order-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWzFIaSbT-au2oz7_bEgxGsABi5TjDrig",
+            authDomain: "cardapio-5fd4a.firebaseapp.com",
+            projectId: "cardapio-5fd4a",
+            storageBucket: "cardapio-5fd4a.firebasestorage.app",
+            messagingSenderId: "774670757984",
+            appId: "1:774670757984:web:fc395973740044ab079305"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const MASTER_EMAIL = "matthecarvalho@gmail.com";
+        const MASTER_PASS = "Onerepublic";
+
+        let stores = [], products = [], orders = [];
+        let loggedStoreId = localStorage.getItem('saas_logged_store') || null;
+        let isMasterLoggedIn = localStorage.getItem('saas_master_logged') === 'true';
+
+        window.loadDatabase = async function() {
+            try {
+                const storesSnap = await getDocs(collection(db, "stores"));
+                stores = storesSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const prodsSnap = await getDocs(collection(db, "products"));
+                products = prodsSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const ordersSnap = await getDocs(collection(db, "orders"));
+                orders = ordersSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                if (isMasterLoggedIn) {
+                    showMasterView();
+                } else if (loggedStoreId) {
+                    const store = stores.find(s => s.id === loggedStoreId);
+                    if(store) showEmpresarioView(store);
+                }
+
+                setInterval(async () => {
+                    const oSnap = await getDocs(collection(db, "orders"));
+                    const newOrders = oSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+                    if (newOrders.length > orders.length && loggedStoreId) {
+                        const sound = document.getElementById('order-sound');
+                        if(sound) sound.play().catch(e => {});
+                    }
+                    orders = newOrders;
+                    if(document.getElementById('view-admin_empresario').style.display === 'block') renderKanban();
+                }, 10000);
+            } catch (err) { console.error(err); }
+        };
+
+        window.executeGlobalLogin = function() {
+            const email = document.getElementById('global-email').value.trim();
+            const pass = document.getElementById('global-pass').value.trim();
+
+            if (email === MASTER_EMAIL && pass === MASTER_PASS) {
+                localStorage.setItem('saas_master_logged', 'true');
+                isMasterLoggedIn = true;
+                showMasterView();
+                return;
+            }
+
+            const store = stores.find(s => s.email === email && s.pass === pass);
+            if (store) {
+                loggedStoreId = store.id;
+                localStorage.setItem('saas_logged_store', store.id);
+                showEmpresarioView(store);
+            } else {
+                alert('E-mail ou senha incorretos!');
+            }
+        }
+
+        function showMasterView() {
+            document.getElementById('view-login-screen').style.display = 'none';
+            document.getElementById('view-admin_master').style.display = 'block';
+            renderMasterStores();
+        }
+
+        function showEmpresarioView(store) {
+            document.getElementById('view-login-screen').style.display = 'none';
+            document.getElementById('view-admin_empresario').style.display = 'block';
+            document.getElementById('admin-store-name').innerText = store.name;
+            setAdminTab('kanban');
+        }
+
+        window.logoutAdmin = function() {
+            localStorage.removeItem('saas_logged_store');
+            localStorage.removeItem('saas_master_logged');
+            window.location.reload();
+        }
+
+        window.setAdminTab = function(tab) {
+            ['kanban', 'metrics', 'catalog'].forEach(t => {
+                document.getElementById(`admin-content-${t}`).style.display = t === tab ? (t==='kanban'?'grid':(t==='metrics'?'grid':'block')) : 'none';
+                document.getElementById(`tab-btn-${t}`).className = t === tab ? 'px-5 py-3 rounded-xl text-sm font-bold bg-amber-600 text-white shadow-lg' : 'px-5 py-3 rounded-xl text-sm font-bold bg-slate-800 text-slate-300';
+            });
+            if(tab === 'kanban') renderKanban(); if(tab === 'metrics') renderMetrics(); if(tab === 'catalog') renderAdminProducts();
+        }
+
+        function renderKanban() {
+            const storeOrders = orders.filter(o => o.storeId === loggedStoreId);
+            document.getElementById('admin-content-kanban').innerHTML = ['Pendente', 'Em Preparo', 'Saiu p/ Entrega', 'Concluído'].map(status => `
+                <div class="glass-card rounded-3xl p-5 shadow-xl">
+                    <h3 class="font-extrabold border-b border-slate-800 pb-3 mb-4 text-white uppercase text-xs">${status}</h3>
+                    <div class="space-y-4">${storeOrders.filter(o => o.status === status).map(o => `
+                        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                            <div class="font-bold text-sm text-slate-300 mb-1">#${o.orderId.toString().slice(-4)} - ${o.customer}</div>
+                            <div class="text-sm text-green-400 font-black mb-4">R$ ${o.total.toFixed(2)}</div>
+                            <select onchange="updateOrderStatus('${o.docId}', this.value)" class="w-full text-xs bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none font-bold">
+                                ${['Pendente', 'Em Preparo', 'Saiu p/ Entrega', 'Concluído'].map(s => `<option ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+                            </select>
+                        </div>`).join('')}</div></div>`).join('');
+        }
+        window.updateOrderStatus = async function(docId, newStatus) { await updateDoc(doc(db, "orders", docId), { status: newStatus }); orders = orders.map(o => o.docId === docId ? {...o, status: newStatus} : o); renderKanban(); }
+        function renderMetrics() { const storeOrders = orders.filter(o => o.storeId === loggedStoreId), rev = storeOrders.reduce((a, b) => a + b.total, 0), count = storeOrders.length; document.getElementById('metric-revenue').innerText = `R$ ${rev.toFixed(2)}`; document.getElementById('metric-orders').innerText = count; document.getElementById('metric-ticket').innerText = `R$ ${(count > 0 ? rev/count : 0).toFixed(2)}`; }
+        
+        function renderAdminProducts() { 
+            document.getElementById('admin-products-list').innerHTML = products.filter(p => p.storeId === loggedStoreId).map(p => `
+            <div class="flex justify-between items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                <div class="flex items-center gap-4">
+                    <img src="${p.img}" class="w-16 h-16 rounded-xl object-cover">
+                    <div><p class="font-bold text-sm text-white">${p.name}</p><p class="text-sm text-green-400 font-black mt-1">R$ ${p.price.toFixed(2)}</p></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs"><span class="${p.available ? 'text-green-400' : 'text-slate-500'} font-bold">${p.available ? 'Disp' : 'Esgotado'}</span><input type="checkbox" ${p.available ? 'checked' : ''} onchange="toggleProduct('${p.docId}')" class="accent-amber-500 w-4 h-4"></label>
+                    <button onclick="deleteProduct('${p.docId}')" class="text-slate-500 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>`).join(''); 
+        }
+
+        window.addNewProductFirebase = async function() { 
+            const name = document.getElementById('p-name').value, price = parseFloat(document.getElementById('p-price').value); 
+            if (!name || isNaN(price)) return alert('Preencha nome e preço!'); 
+            const newProd = { storeId: loggedStoreId, name, category: document.getElementById('p-cat').value, price, desc: document.getElementById('p-desc').value, img: document.getElementById('p-img').value || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400', available: true }; 
+            const docRef = await addDoc(collection(db, "products"), newProd); 
+            newProd.docId = docRef.id; products.push(newProd); 
+            renderAdminProducts(); alert('Cadastrado!');
+        }
+
+        window.toggleProduct = async function(docId) { const p = products.find(prod => prod.docId === docId), newAvail = !p.available; await updateDoc(doc(db, "products", docId), { available: newAvail }); p.available = newAvail; renderAdminProducts(); }
+        window.deleteProduct = async function(docId) { if (confirm('Excluir?')) { await deleteDoc(doc(db, "products", docId)); products = products.filter(p => p.docId !== docId); renderAdminProducts(); } }
+        
+        window.saveNewStoreFirebase = async function() { 
+            const id = document.getElementById('m-id').value.trim().toLowerCase().replace(/\s+/g, '-'), name = document.getElementById('m-name').value, email = document.getElementById('m-email').value, pass = document.getElementById('m-pass').value, phone = document.getElementById('m-phone').value, status = document.getElementById('m-status').value, docId = document.getElementById('m-doc-id').value; 
+            if (!id || !name || !email || !pass || !phone) return alert('Preencha os campos obrigatórios!'); 
+            const logo = document.getElementById('m-logo-val').value || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&q=80&w=200';
+            const cover = document.getElementById('m-cover-val').value || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1200';
