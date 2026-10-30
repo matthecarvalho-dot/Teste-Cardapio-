@@ -23,7 +23,7 @@
             <span>Painel Administrativo SaaS</span>
         </div>
         <div>
-            <button onclick="openLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg">
+            <button onclick="document.getElementById('login-modal').style.display='flex'" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg">
                 <i class="fa-solid fa-right-to-bracket mr-1"></i> Fazer Login
             </button>
         </div>
@@ -34,7 +34,7 @@
             <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20"><i class="fa-solid fa-store"></i></div>
             <h2 class="text-2xl font-black text-white mb-2">Painel de Gestão</h2>
             <p class="text-xs text-slate-400 mb-6">Clique no botão abaixo para entrar com as suas credenciais.</p>
-            <button onclick="openLoginModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
+            <button onclick="document.getElementById('login-modal').style.display='flex'" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
                 Entrar no Sistema
             </button>
         </div>
@@ -43,7 +43,7 @@
     <!-- MODAL DE LOGIN -->
     <div id="login-modal" class="fixed inset-0 bg-[#020617]/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="glass-card rounded-3xl p-8 max-w-sm w-full shadow-2xl relative border border-slate-700/50">
-            <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <button onclick="document.getElementById('login-modal').style.display='none'" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-user-lock"></i></div>
                 <h2 class="text-2xl font-black text-white">Autenticação</h2>
@@ -51,7 +51,7 @@
             <div class="space-y-4">
                 <input type="email" id="global-email" placeholder="O seu E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
                 <input type="password" id="global-pass" placeholder="A sua Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none">
-                <button onclick="executeGlobalLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg">Acessar Painel</button>
+                <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg">Acessar Painel</button>
             </div>
         </div>
     </div>
@@ -73,36 +73,33 @@
 
         const MASTER_EMAIL = "matthecarvalho@gmail.com";
         const MASTER_PASS = "Onerepublic";
-        let stores = [];
 
-        window.loadDatabase = async function() {
-            try {
-                const storesSnap = await getDocs(collection(db, "stores"));
-                stores = storesSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
-            } catch (err) { console.error(err); }
-        }
-
-        window.openLoginModal = function() { document.getElementById('login-modal').style.display = 'flex'; }
-        window.closeLoginModal = function() { document.getElementById('login-modal').style.display = 'none'; }
-
-        window.executeGlobalLogin = function() {
+        window.fazerLogin = async function() {
             const email = document.getElementById('global-email').value.trim();
             const pass = document.getElementById('global-pass').value.trim();
 
             if (email === MASTER_EMAIL && pass === MASTER_PASS) {
                 alert('Login Master efetuado com sucesso!');
-                closeLoginModal();
+                document.getElementById('login-modal').style.display = 'none';
                 return;
             }
-            const store = stores.find(s => s.email === email && s.pass === pass);
-            if (store) {
-                alert(`Bem-vindo lojista: ${store.name}`);
-                closeLoginModal();
-            } else {
-                alert('E-mail ou senha incorretos!');
+
+            try {
+                const storesSnap = await getDocs(collection(db, "stores"));
+                const stores = storesSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+                const store = stores.find(s => s.email === email && s.pass === pass);
+                
+                if (store) {
+                    alert(`Bem-vindo lojista: ${store.name}`);
+                    document.getElementById('login-modal').style.display = 'none';
+                } else {
+                    alert('E-mail ou senha incorretos!');
+                }
+            } catch (err) {
+                alert('Erro ao conectar à base de dados.');
+                console.error(err);
             }
         }
-        loadDatabase();
     </script>
 </body>
 </html>
