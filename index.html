@@ -54,7 +54,7 @@
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
                 <h2 class="text-2xl font-black text-white mb-2">Área Administrativa</h2>
-                <p class="text-xs text-slate-400 mb-6">Insira os seus dados de Dono do Sistema ou Lojista.</p>
+                <p class="text-xs text-slate-400 mb-6">Insira os seus dados de Dono do Sistema.</p>
                 <div class="space-y-4 text-left">
                     <input type="email" id="login-email" placeholder="E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
                     <input type="password" id="login-senha" placeholder="Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
@@ -75,6 +75,7 @@
                 <button onclick="logoutSistema()" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition">Sair</button>
             </div>
             
+            <!-- Criar Loja -->
             <div class="glass-card p-6 md:p-8 rounded-3xl space-y-4">
                 <h3 class="font-bold text-white text-lg">Criar Nova Loja / Cliente</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,8 +89,10 @@
                 <button onclick="criarLojaMaster()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Salvar e Criar Loja</button>
             </div>
 
+            <!-- Lista de Lojas com Acesso Direto para Você -->
             <div class="glass-card p-6 md:p-8 rounded-3xl">
-                <h3 class="font-bold text-white text-lg mb-4">Lojas Registadas no Sistema</h3>
+                <h3 class="font-bold text-white text-lg mb-2">Acesso Direto aos Sites das Lojas</h3>
+                <p class="text-xs text-slate-400 mb-6">Aqui tem o acesso instantâneo para abrir ou copiar o link de qualquer loja criada.</p>
                 <div id="master-lista-lojas" class="space-y-3"></div>
             </div>
         </div>
@@ -127,7 +130,6 @@
                 const pSnap = await getDocs(collection(db, "products"));
                 products = pSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
 
-                // SE TEM ?store= NO LINK -> É O CLIENTE A VER O CARDÁPIO
                 if (storeId) {
                     const store = stores.find(s => s.id === storeId);
                     if (!store) {
@@ -155,7 +157,6 @@
                     return;
                 }
 
-                // SE NÃO TEM ?store= NO LINK -> VERIFICA SE JÁ ESTÁ LOGADO COMO MASTER
                 if (localStorage.getItem('saas_master_logged') === 'true') {
                     mostrarPainelMaster();
                 }
@@ -214,15 +215,25 @@
 
         function renderizarListaLojasMaster() {
             const container = document.getElementById('master-lista-lojas');
-            container.innerHTML = stores.length ? stores.map(s => `
-                <div class="bg-slate-950 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
-                    <div>
-                        <strong class="text-white text-sm">${s.name}</strong> 
-                        <span class="text-slate-400 block">Link do Cliente: <code class="text-amber-400">index.html?store=${s.id}</code></span>
+            container.innerHTML = stores.length ? stores.map(s => {
+                const urlLoja = window.location.origin + window.location.pathname.replace('index.html','') + `index.html?store=${s.id}`;
+                return `
+                    <div class="bg-slate-950 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
+                        <div>
+                            <strong class="text-white text-sm">${s.name}</strong> 
+                            <span class="text-slate-400 block">ID: ${s.id}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="${urlLoja}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Site
+                            </a>
+                            <button onclick="navigator.clipboard.writeText('${urlLoja}'); alert('Link copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-lg transition">
+                                <i class="fa-solid fa-copy"></i> Copiar Link
+                            </button>
+                        </div>
                     </div>
-                    <button onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname.replace('index.html','') + 'index.html?store=${s.id}'); alert('Link copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg transition">Copiar Link</button>
-                </div>
-            `).join('') : '<p class="text-slate-500 text-sm">Nenhuma loja registada.</p>';
+                `;
+            }).join('') : '<p class="text-slate-500 text-sm">Nenhuma loja registada.</p>';
         }
 
         initAppMaster();
