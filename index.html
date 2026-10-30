@@ -15,11 +15,17 @@
 </head>
 <body class="pb-28">
 
+    <!-- TELA DE CARREGAMENTO (Evita tela branca) -->
+    <div id="loader" class="fixed inset-0 bg-[#020617] z-[999] flex flex-col items-center justify-center text-white">
+        <div class="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 id="loader-text" class="font-bold text-lg">A iniciar o sistema...</h2>
+    </div>
+
     <!-- CABEÇALHO GERAL -->
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-5 py-4 flex justify-between items-center">
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-5 py-4 flex justify-between items-center hidden" id="main-header">
         <div class="font-extrabold text-sm text-white flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-red-600 flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-bolt text-white text-xs"></i>
+                <i class="fa-solid fa-store text-white text-xs"></i>
             </div>
             <span id="header-title" class="text-base tracking-tight">SaaS Enterprise</span>
         </div>
@@ -36,7 +42,7 @@
                 <img id="store-logo" src="" class="w-28 h-28 md:w-36 md:h-36 rounded-3xl border-4 border-[#020617] shadow-2xl object-cover bg-slate-900 shrink-0">
                 <div class="pb-2">
                     <h1 id="store-name" class="text-3xl md:text-5xl font-extrabold text-white mb-2">Carregando...</h1>
-                    <span id="store-hours" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-bold text-amber-400"><i class="fa-solid fa-clock"></i> Aberto</span>
+                    <span id="store-hours" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-bold text-amber-400"><i class="fa-solid fa-clock"></i> <span>Aberto</span></span>
                 </div>
             </div>
             
@@ -52,8 +58,8 @@
             <h2 class="text-2xl font-black text-white mb-2">Acesso Restrito</h2>
             <p class="text-xs text-slate-400 mb-6">Área exclusiva para Lojistas e Donos do Sistema.</p>
             <div class="space-y-4 text-left">
-                <input type="email" id="login-email" placeholder="Seu E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
-                <input type="password" id="login-senha" placeholder="Sua Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                <input type="email" id="login-email" placeholder="O seu E-mail" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                <input type="password" id="login-senha" placeholder="A sua Senha" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
                 <button onclick="executeLogin()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Entrar no Painel</button>
             </div>
         </div>
@@ -74,7 +80,7 @@
             <div class="glass-card p-6 rounded-3xl h-fit">
                 <h3 class="font-bold text-white text-lg mb-4"><i class="fa-solid fa-plus text-amber-500 mr-2"></i>Nova Loja</h3>
                 <div class="space-y-3">
-                    <input type="text" id="m-id" placeholder="URL da Loja (ex: pizzaria-maria)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="m-id" placeholder="ID (ex: pizzaria-maria)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="text" id="m-name" placeholder="Nome Completo" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="email" id="m-email" placeholder="E-mail (Login)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="text" id="m-pass" placeholder="Senha Provisória" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
@@ -92,7 +98,7 @@
         </div>
     </div>
 
-    <!-- ================= 4. PAINEL DO LOJISTA (E Master gerindo loja) ================= -->
+    <!-- ================= 4. PAINEL DO LOJISTA ================= -->
     <div id="view-store-admin" class="max-w-6xl mx-auto px-4 py-8 hidden space-y-6">
         
         <div class="glass-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
@@ -106,45 +112,40 @@
             </div>
         </div>
 
-        <!-- Abas Navegação -->
         <div class="flex gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-800 overflow-x-auto scrollbar-hide">
             <button onclick="switchAdminTab('kanban')" id="tab-kanban" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold bg-amber-600 text-white shadow-lg whitespace-nowrap"><i class="fa-solid fa-list-check mr-2"></i>Pedidos em Tempo Real</button>
             <button onclick="switchAdminTab('catalog')" id="tab-catalog" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 whitespace-nowrap"><i class="fa-solid fa-utensils mr-2"></i>Gerir Cardápio</button>
             <button onclick="switchAdminTab('settings')" id="tab-settings" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 whitespace-nowrap"><i class="fa-solid fa-gear mr-2"></i>Configurações e Senha</button>
         </div>
 
-        <!-- Conteúdo Kanban (Pedidos) -->
         <div id="content-kanban" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
-        <!-- Conteúdo Cardápio -->
         <div id="content-catalog" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="glass-card p-6 rounded-3xl h-fit">
-                <h3 class="font-bold text-white mb-4"><i class="fa-solid fa-plus text-amber-500 mr-2"></i>Adicionar Prato</h3>
+                <h3 class="font-bold text-white mb-4"><i class="fa-solid fa-plus text-amber-500 mr-2"></i>Adicionar Produto</h3>
                 <div class="space-y-3">
-                    <input type="text" id="p-name" placeholder="Nome do Prato" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
+                    <input type="text" id="p-name" placeholder="Nome do Produto" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="text" id="p-cat" placeholder="Categoria (ex: Pizzas)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="number" step="0.01" id="p-price" placeholder="Preço (R$)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
                     <input type="text" id="p-img" placeholder="Link da Foto (URL)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none">
-                    <textarea id="p-desc" placeholder="Descrição dos ingredientes..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none" rows="2"></textarea>
-                    <button onclick="addMenuProduct()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2">Guardar no Cardápio</button>
+                    <textarea id="p-desc" placeholder="Descrição do produto..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white outline-none" rows="2"></textarea>
+                    <button onclick="addMenuProduct()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2">Salvar Produto</button>
                 </div>
             </div>
             <div class="lg:col-span-2 glass-card p-6 rounded-3xl">
-                <h3 class="font-bold text-white mb-4">Itens do Cardápio Atual</h3>
+                <h3 class="font-bold text-white mb-4">Cardápio Atual</h3>
                 <div id="admin-products-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div>
             </div>
         </div>
 
-        <!-- Conteúdo Configurações (Mudar Senha) -->
         <div id="content-settings" class="hidden glass-card p-6 md:p-8 rounded-3xl max-w-lg">
-            <h3 class="font-bold text-white text-lg mb-2">Segurança e Acesso</h3>
-            <p class="text-xs text-slate-400 mb-6">Altere a senha de acesso ao painel desta loja.</p>
+            <h3 class="font-bold text-white text-lg mb-2">Alterar Senha da Loja</h3>
+            <p class="text-xs text-slate-400 mb-6">Defina uma nova senha para aceder ao painel deste estabelecimento.</p>
             <div class="space-y-4">
-                <input type="password" id="new-password" placeholder="Digite a nova senha..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
+                <input type="text" id="new-password" placeholder="Digite a nova senha..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none focus:border-amber-500">
                 <button onclick="changeStorePassword()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Atualizar Senha</button>
             </div>
         </div>
-
     </div>
 
     <!-- MODAL DO PRODUTO (CLIENTE) -->
@@ -171,13 +172,13 @@
     <div id="cart-floater" class="fixed bottom-6 left-0 right-0 px-4 z-40 hidden pointer-events-none">
         <div class="max-w-md mx-auto pointer-events-auto">
             <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl flex justify-between items-center font-bold shadow-2xl transition">
-                <div class="flex items-center gap-3"><div class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-xs" id="cart-count">0</div><span>Fazer Pedido via WhatsApp</span></div>
+                <div class="flex items-center gap-3"><div class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-xs" id="cart-count">0</div><span>Pedir no WhatsApp</span></div>
                 <span class="text-lg">R$ <span id="cart-total">0.00</span></span>
             </button>
         </div>
     </div>
 
-    <!-- Firebase SDKs e Lógica -->
+    <!-- Firebase SDKs e Lógica Principal -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -193,57 +194,66 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // CONTAS MASTER (DONOS DO SISTEMA)
+        // CONFIGURAÇÃO DOS DONOS DO SISTEMA
         const MASTER_ACCOUNTS = [
             { email: "matthecarvalho@gmail.com", pass: "Onerepublic" },
             { email: "lidyteste1@gmail.com", pass: "239818" }
         ];
 
         let stores = [], products = [], orders = [];
-        let currentRole = null; // 'master', 'lojista', ou 'client'
-        let managedStoreId = null; // ID da loja sendo gerida no painel
+        let managedStoreId = null; 
         let activeProduct = null, cart = [], activeQty = 1, activeCategory = '';
 
         const urlParams = new URLSearchParams(window.location.search);
         const storeIdParam = urlParams.get('store');
 
-        // INICIALIZAÇÃO
-        window.onload = async () => {
-            await loadData();
-            
-            // 1. Roteamento: É cliente acessando uma loja?
-            if (storeIdParam) {
-                currentRole = 'client';
-                const store = stores.find(s => s.id === storeIdParam);
-                if (store) renderClientStore(store);
-                else document.body.innerHTML = `<h1 class="text-white text-center mt-20">Loja não encontrada.</h1>`;
-                return;
-            }
-
-            // 2. Roteamento: Tem sessão salva?
-            const savedRole = localStorage.getItem('saas_role');
-            const savedStoreId = localStorage.getItem('saas_store');
-
-            if (savedRole === 'master') {
-                currentRole = 'master';
-                showView('view-master');
-                renderMasterStores();
-            } else if (savedRole === 'lojista' && savedStoreId) {
-                currentRole = 'lojista';
-                managedStoreId = savedStoreId;
-                showView('view-store-admin');
-                initStoreAdminPanel();
-            } else {
-                showView('view-login');
-            }
-        };
-
-        async function loadData() {
+        // INICIALIZADOR SEGURO
+        async function initSystem() {
             try {
-                stores = (await getDocs(collection(db, "stores"))).docs.map(d => ({ docId: d.id, ...d.data() }));
-                products = (await getDocs(collection(db, "products"))).docs.map(d => ({ docId: d.id, ...d.data() }));
-                orders = (await getDocs(collection(db, "orders"))).docs.map(d => ({ docId: d.id, ...d.data() }));
-            } catch (e) { console.error("Erro ao carregar DB:", e); }
+                const sSnap = await getDocs(collection(db, "stores"));
+                stores = sSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const pSnap = await getDocs(collection(db, "products"));
+                products = pSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                const oSnap = await getDocs(collection(db, "orders"));
+                orders = oSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+                // Esconder o loader e mostrar cabeçalho
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('main-header').classList.remove('hidden');
+
+                // 1. ROTEAMENTO: É o cliente acessando o cardápio? (ex: ?store=pizzaria)
+                if (storeIdParam) {
+                    const store = stores.find(s => s.id === storeIdParam);
+                    if (store) {
+                        renderClientStore(store);
+                    } else {
+                        document.getElementById('view-client').innerHTML = `<h1 class="text-white text-center mt-20 text-2xl">Loja não encontrada.</h1>`;
+                        showView('view-client');
+                    }
+                    return;
+                }
+
+                // 2. ROTEAMENTO: Área Administrativa (Sem parâmetro ?store=)
+                const savedRole = localStorage.getItem('saas_role');
+                const savedStoreId = localStorage.getItem('saas_store');
+
+                if (savedRole === 'master') {
+                    showView('view-master');
+                    renderMasterStores();
+                } else if (savedRole === 'lojista' && savedStoreId) {
+                    managedStoreId = savedStoreId;
+                    showView('view-store-admin');
+                    initStoreAdminPanel();
+                } else {
+                    showView('view-login');
+                }
+
+            } catch (error) {
+                console.error("Erro Firebase:", error);
+                document.getElementById('loader-text').innerText = "Erro ao conectar à base de dados. Atualize a página.";
+            }
         }
 
         function showView(viewId) {
@@ -252,7 +262,7 @@
             });
         }
 
-        // ================= SISTEMA DE LOGIN =================
+        // ================= GESTÃO DE ACESSOS =================
         window.executeLogin = () => {
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-senha').value.trim();
@@ -269,7 +279,7 @@
                 localStorage.setItem('saas_store', store.id);
                 window.location.reload();
             } else {
-                alert('Credenciais incorretas!');
+                alert('E-mail ou senha incorretos!');
             }
         };
 
@@ -279,47 +289,57 @@
             window.location.reload();
         };
 
-        // ================= PAINEL MASTER =================
+        // ================= PAINEL DO MASTER =================
         window.createStore = async () => {
             const id = document.getElementById('m-id').value.trim().toLowerCase().replace(/\s+/g, '-');
             const name = document.getElementById('m-name').value;
             const email = document.getElementById('m-email').value;
             const pass = document.getElementById('m-pass').value;
+            
             if(!id || !name || !email || !pass) return alert('Preencha os campos essenciais!');
 
-            const nova = { id, name, email, pass, phone: document.getElementById('m-phone').value, logo: document.getElementById('m-logo').value || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=200', cover: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200' };
-            await addDoc(collection(db, "stores"), nova);
-            alert('Loja criada!'); window.location.reload();
+            const novaLoja = { 
+                id, name, email, pass, 
+                phone: document.getElementById('m-phone').value, 
+                logo: document.getElementById('m-logo').value || 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=200', 
+                cover: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200' 
+            };
+            
+            try {
+                await addDoc(collection(db, "stores"), novaLoja);
+                alert('Loja criada com sucesso!'); 
+                window.location.reload();
+            } catch(e) { alert('Erro ao criar loja.'); }
         };
 
         function renderMasterStores() {
             const container = document.getElementById('master-stores-list');
             const basePath = window.location.pathname.replace('index.html', '');
-            container.innerHTML = stores.map(s => {
-                const url = window.location.origin + basePath + `?store=${s.id}`;
+            
+            container.innerHTML = stores.length ? stores.map(s => {
+                const urlLimpa = window.location.origin + basePath + `?store=${s.id}`;
                 return `
                 <div class="bg-slate-950 p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 border border-slate-800">
                     <div class="flex items-center gap-4">
                         <img src="${s.logo}" class="w-12 h-12 rounded-xl object-cover">
                         <div>
                             <strong class="text-white text-base">${s.name}</strong>
-                            <p class="text-slate-500 text-xs mt-1">ID: ${s.id} | Login: ${s.email}</p>
+                            <p class="text-slate-500 text-xs mt-1">ID: ${s.id} | Senha: ${s.pass}</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="gerenciarLojaComoMaster('${s.id}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2.5 rounded-xl transition text-xs"><i class="fa-solid fa-wrench mr-2"></i>Gerenciar</button>
-                        <button onclick="navigator.clipboard.writeText('${url}'); alert('Copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl transition text-xs"><i class="fa-solid fa-copy mr-2"></i>Copiar Link</button>
+                        <button onclick="gerenciarLojaComoMaster('${s.id}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl transition text-xs"><i class="fa-solid fa-wrench mr-1"></i>Editar Cardápio</button>
+                        <button onclick="navigator.clipboard.writeText('${urlLimpa}'); alert('Copiado!');" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition text-xs"><i class="fa-solid fa-copy mr-1"></i>Link Limpo</button>
                     </div>
                 </div>`;
-            }).join('');
+            }).join('') : '<p class="text-slate-500 text-sm">Ainda não existem lojas.</p>';
         }
 
-        // ================= MASTER GERINDO LOJISTA =================
         window.gerenciarLojaComoMaster = (storeId) => {
             managedStoreId = storeId;
             showView('view-store-admin');
             document.getElementById('btn-voltar-master').style.display = 'block';
-            document.getElementById('admin-badge').innerText = "Modo Master / Suporte";
+            document.getElementById('admin-badge').innerText = "Acesso Master (Suporte)";
             initStoreAdminPanel();
         };
 
@@ -328,16 +348,18 @@
             showView('view-master');
         };
 
-        // ================= PAINEL DO LOJISTA (Compartilhado com Master) =================
+        // ================= PAINEL DO LOJISTA & CARDÁPIO =================
         function initStoreAdminPanel() {
             const store = stores.find(s => s.id === managedStoreId);
             document.getElementById('admin-panel-store-name').innerText = store.name;
-            switchAdminTab('kanban');
+            switchAdminTab('catalog'); // Abre direto na edição de cardápio
             
-            // Atualização a cada 10s para ver novos pedidos
+            // Loop para atualizar pedidos no Kanban a cada 10s
             setInterval(async () => {
-                orders = (await getDocs(collection(db, "orders"))).docs.map(d => ({ docId: d.id, ...d.data() }));
-                if(document.getElementById('content-kanban').style.display !== 'none') renderKanban();
+                if(document.getElementById('content-kanban').style.display !== 'none'){
+                    orders = (await getDocs(collection(db, "orders"))).docs.map(d => ({ docId: d.id, ...d.data() }));
+                    renderKanban();
+                }
             }, 10000);
         }
 
@@ -348,3 +370,165 @@
                 if(t === tab) { btn.classList.add('bg-amber-600','text-white'); btn.classList.remove('bg-transparent','text-slate-400'); }
                 else { btn.classList.remove('bg-amber-600','text-white'); btn.classList.add('bg-transparent','text-slate-400'); }
             });
+            if(tab === 'kanban') renderKanban();
+            if(tab === 'catalog') renderCatalogAdmin();
+        };
+
+        // Gestão Kanban
+        function renderKanban() {
+            const myOrders = orders.filter(o => o.storeId === managedStoreId);
+            document.getElementById('content-kanban').innerHTML = ['Pendente', 'Em Preparo', 'Saiu p/ Entrega', 'Concluído'].map(st => `
+                <div class="glass-card p-4 rounded-3xl border-t-4 ${st==='Pendente'?'border-t-amber-500':(st==='Concluído'?'border-t-green-500':'border-t-blue-500')}">
+                    <h4 class="font-black text-xs uppercase text-slate-300 mb-3">${st}</h4>
+                    <div class="space-y-3">${myOrders.filter(o=>o.status===st).map(o=>`
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                            <p class="font-bold text-sm text-white">#${o.orderId.toString().slice(-4)} - ${o.customer}</p>
+                            <p class="text-green-400 font-black mt-1">R$ ${o.total.toFixed(2)}</p>
+                            <select onchange="atualizarPedido('${o.docId}', this.value)" class="mt-3 w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white outline-none font-bold">
+                                ${['Pendente', 'Em Preparo', 'Saiu p/ Entrega', 'Concluído'].map(op=>`<option ${op===o.status?'selected':''}>${op}</option>`).join('')}
+                            </select>
+                        </div>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        window.atualizarPedido = async (docId, newStatus) => { await updateDoc(doc(db, "orders", docId), { status: newStatus }); orders = orders.map(o=>o.docId===docId?{...o, status:newStatus}:o); renderKanban(); };
+
+        // Gestão Cardápio
+        function renderCatalogAdmin() {
+            const myProds = products.filter(p => p.storeId === managedStoreId);
+            document.getElementById('admin-products-list').innerHTML = myProds.map(p => `
+                <div class="bg-slate-950 p-4 rounded-2xl flex justify-between items-center border border-slate-800">
+                    <div class="flex items-center gap-4">
+                        <img src="${p.img}" class="w-14 h-14 rounded-xl object-cover shrink-0">
+                        <div>
+                            <p class="font-bold text-sm text-white">${p.name}</p>
+                            <p class="text-green-400 font-bold text-xs mt-1">R$ ${p.price.toFixed(2)} • ${p.category}</p>
+                        </div>
+                    </div>
+                    <button onclick="removerPrato('${p.docId}')" class="text-slate-500 hover:text-red-500 bg-slate-900 p-3 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('') || '<p class="text-slate-500 text-sm">A loja não tem produtos registados.</p>';
+        }
+
+        window.addMenuProduct = async () => {
+            const name = document.getElementById('p-name').value, cat = document.getElementById('p-cat').value, price = parseFloat(document.getElementById('p-price').value);
+            if(!name || !cat || isNaN(price)) return alert('Nome, Categoria e Preço são obrigatórios!');
+            
+            const novo = { 
+                storeId: managedStoreId, name, category: cat, price, 
+                desc: document.getElementById('p-desc').value, 
+                img: document.getElementById('p-img').value || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400', 
+                available: true 
+            };
+            
+            try {
+                const ref = await addDoc(collection(db, "products"), novo);
+                novo.docId = ref.id; 
+                products.push(novo);
+                ['p-name','p-cat','p-price','p-desc','p-img'].forEach(id => document.getElementById(id).value='');
+                renderCatalogAdmin();
+            } catch(e) { alert("Erro ao salvar produto."); }
+        };
+
+        window.removerPrato = async (docId) => {
+            if(confirm('Tem a certeza que deseja apagar?')) { 
+                await deleteDoc(doc(db, "products", docId)); 
+                products = products.filter(p=>p.docId!==docId); 
+                renderCatalogAdmin(); 
+            }
+        };
+
+        // Alterar Senha
+        window.changeStorePassword = async () => {
+            const newPass = document.getElementById('new-password').value.trim();
+            if(newPass.length < 4) return alert('A senha deve ter pelo menos 4 caracteres.');
+            const store = stores.find(s => s.id === managedStoreId);
+            try {
+                await updateDoc(doc(db, "stores", store.docId), { pass: newPass });
+                store.pass = newPass; 
+                document.getElementById('new-password').value = '';
+                alert('Senha alterada com sucesso!');
+            } catch(e) { alert("Erro ao mudar a senha."); }
+        };
+
+        // ================= VISÃO DO CLIENTE FINAL =================
+        function renderClientStore(store) {
+            document.getElementById('header-title').innerText = store.name;
+            document.getElementById('store-name').innerText = store.name;
+            document.getElementById('store-logo').src = store.logo;
+            document.getElementById('store-banner').style.backgroundImage = `url('${store.cover}')`;
+            
+            const cats = [...new Set(products.filter(p=>p.storeId===store.id).map(p=>p.category))];
+            if(cats.length > 0) activeCategory = cats[0];
+            
+            document.getElementById('categories-container').innerHTML = cats.map(c => 
+                `<button onclick="filterCat('${c}')" class="px-6 py-2.5 rounded-full text-sm font-bold border transition ${activeCategory===c?'bg-white text-slate-950 border-white':'bg-slate-900 text-slate-300 border-slate-700'}">${c}</button>`
+            ).join('');
+            
+            renderClientProducts(store.id);
+            showView('view-client');
+        }
+
+        window.filterCat = (cat) => { 
+            activeCategory = cat; 
+            renderClientStore(stores.find(s=>s.id===storeIdParam)); 
+        };
+
+        function renderClientProducts(sId) {
+            const ps = products.filter(p => p.storeId === sId && p.category === activeCategory);
+            document.getElementById('products-container').innerHTML = ps.map(p => `
+                <div onclick="abrirProduto('${p.docId}')" class="glass-card rounded-2xl p-4 flex gap-4 cursor-pointer hover:border-amber-500/50 transition">
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div><h3 class="font-bold text-white">${p.name}</h3><p class="text-xs text-slate-400 mt-1 line-clamp-2">${p.desc}</p></div>
+                        <span class="font-black text-green-400 mt-3 text-lg">R$ ${p.price.toFixed(2)}</span>
+                    </div>
+                    <img src="${p.img}" class="w-28 h-28 rounded-xl object-cover shrink-0 border border-slate-700">
+                </div>
+            `).join('');
+        }
+
+        // Lógica do Carrinho do Cliente
+        window.abrirProduto = (dId) => {
+            activeProduct = products.find(p=>p.docId===dId); 
+            activeQty = 1;
+            document.getElementById('m-prod-img').src = activeProduct.img; 
+            document.getElementById('m-prod-title').innerText = activeProduct.name; 
+            document.getElementById('m-prod-desc').innerText = activeProduct.desc; 
+            document.getElementById('m-prod-qty').innerText = activeQty;
+            document.getElementById('modal-product').style.display = 'flex';
+        };
+        
+        window.closeProduct = () => document.getElementById('modal-product').style.display='none';
+        window.qtd = (d) => { activeQty = Math.max(1, activeQty+d); document.getElementById('m-prod-qty').innerText = activeQty; };
+        
+        window.addToCart = () => { cart.push({ p: activeProduct, q: activeQty }); closeProduct(); updateCart(); };
+        
+        function updateCart() {
+            const floater = document.getElementById('cart-floater');
+            if(cart.length > 0){
+                floater.style.display='block'; 
+                document.getElementById('cart-count').innerText = cart.reduce((a,b)=>a+b.q,0);
+                document.getElementById('cart-total').innerText = cart.reduce((a,b)=>a+(b.p.price*b.q),0).toFixed(2);
+            } else { 
+                floater.style.display='none'; 
+            }
+        }
+
+        window.sendOrder = async () => {
+            const store = stores.find(s=>s.id===storeIdParam);
+            const total = cart.reduce((a,b)=>a+(b.p.price*b.q),0);
+            let text = `*NOVO PEDIDO - ${store.name.toUpperCase()}*\n\n` + cart.map(i=>`• ${i.q}x ${i.p.name} (R$ ${(i.p.price*i.q).toFixed(2)})`).join('\n') + `\n\n*Total: R$ ${total.toFixed(2)}*\n\n(Envie esta mensagem para prosseguir!)`;
+            
+            try {
+                await addDoc(collection(db, "orders"), { orderId: Date.now(), storeId: store.id, customer: "Cliente App", total, status: 'Pendente' });
+                window.open(`https://wa.me/${store.phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
+                cart = []; updateCart();
+            } catch(e) { alert("Erro ao enviar pedido."); }
+        };
+
+        // Iniciar todo o processo assim que o script carregar
+        initSystem();
+    </script>
+</body>
+</html>
